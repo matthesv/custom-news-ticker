@@ -1,0 +1,30 @@
+.news-ticker-container {
+    border-left: 3px solid #FF4500;
+    padding: 10px;
+    max-width: 500px;
+}
+
+.news-ticker-entry {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.news-ticker-dot {
+    width: 12px;
+    height: 12px;
+    background-color: red;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.news-ticker-content {
+    flex-grow: 1;
+}
+
+.news-ticker-time {
+    font-size: 0.8em;
+    color: gray;
+}
