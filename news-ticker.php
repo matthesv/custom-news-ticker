@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.2.1
+Version: 1.2.2
 Author: Matthes
 */
 
@@ -20,6 +20,7 @@ require_once NEWS_TICKER_PATH . 'includes/news-functions.php'; // Gemeinsame Fun
 require_once NEWS_TICKER_PATH . 'includes/shortcode.php';
 require_once NEWS_TICKER_PATH . 'includes/ajax-refresh.php';
 require_once NEWS_TICKER_PATH . 'includes/time-translations.php'; // Neue Übersetzungsfunktionen
+require_once NEWS_TICKER_PATH . 'includes/settings-page.php'; // Einstellungen-Seite
 
 // Assets registrieren mit Cache-Busting und Nonce
 function news_ticker_enqueue_assets() {
@@ -31,9 +32,10 @@ function news_ticker_enqueue_assets() {
     wp_enqueue_style('news-ticker-style', plugins_url('assets/style.css', __FILE__), array(), $style_version);
     wp_enqueue_script('news-ticker-script', plugins_url('assets/script.js', __FILE__), array('jquery'), $script_version, true);
     wp_localize_script('news-ticker-script', 'newsTickerAjax', [
-        'ajax_url' => admin_url('admin-ajax.php'),
-        'nonce'    => wp_create_nonce('news_ticker_nonce'),
-        'language' => substr(get_locale(), 0, 2) // Füge aktuelle Sprache zum JavaScript hinzu
+        'ajax_url'    => admin_url('admin-ajax.php'),
+        'nonce'       => wp_create_nonce('news_ticker_nonce'),
+        'language'    => substr(get_locale(), 0, 2),
+        'border_color'=> get_option('news_ticker_border_color', '#FF4500')
     ]);
 }
 add_action('wp_enqueue_scripts', 'news_ticker_enqueue_assets');
@@ -57,6 +59,7 @@ function news_ticker_settings_page() {
 // Einstellungen registrieren
 function news_ticker_register_settings() {
     register_setting('news_ticker_options', 'news_ticker_language', ['default' => '']);
+    register_setting('news_ticker_options', 'news_ticker_border_color', ['default' => '#FF4500']); // Neue Option
     
     add_settings_section(
         'news_ticker_translation_section',
@@ -72,11 +75,19 @@ function news_ticker_register_settings() {
         'news-ticker-settings',
         'news_ticker_translation_section'
     );
+    
+    add_settings_field(
+        'news_ticker_border_color',
+        'Randfarbe für News-Einträge',
+        'news_ticker_border_color_callback',
+        'news-ticker-settings',
+        'news_ticker_translation_section'
+    );
 }
 add_action('admin_init', 'news_ticker_register_settings');
 
 function news_ticker_translation_section_callback() {
-    echo '<p>Hier können Sie die Sprache für die Zeitangaben im News Ticker einstellen.</p>';
+    echo '<p>Hier können Sie die Sprache für die Zeitangaben und die Randfarbe der News-Einträge einstellen.</p>';
 }
 
 function news_ticker_language_callback() {
@@ -102,6 +113,12 @@ function news_ticker_language_callback() {
     echo '</select>';
 }
 
+function news_ticker_border_color_callback() {
+    $color = get_option('news_ticker_border_color', '#FF4500');
+    echo '<input type="text" name="news_ticker_border_color" value="'.esc_attr($color).'" class="my-color-field" data-default-color="#FF4500" />';
+    echo '<p class="description">Wählen Sie die Randfarbe für die News-Einträge.</p>';
+}
+
 // Plugin Update Checker laden (GitHub) - optional
 require_once NEWS_TICKER_PATH . 'includes/plugin-update-checker/plugin-update-checker.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
@@ -112,3 +129,4 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
     'custom-news-ticker'
 );
 $myUpdateChecker->setBranch('main');
+?>

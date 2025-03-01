@@ -11,10 +11,12 @@ function nt_settings_page() {
             $language = isset($_POST['nt_language']) ? sanitize_text_field($_POST['nt_language']) : '';
             $refresh_interval = isset($_POST['nt_refresh_interval']) ? intval($_POST['nt_refresh_interval']) : 60;
             $entries_count = isset($_POST['nt_entries_count']) ? intval($_POST['nt_entries_count']) : 5;
+            $border_color = isset($_POST['nt_border_color']) ? sanitize_text_field($_POST['nt_border_color']) : '#FF4500';
             
             update_option('news_ticker_language', $language);
             update_option('news_ticker_refresh_interval', $refresh_interval);
             update_option('news_ticker_entries_count', $entries_count);
+            update_option('news_ticker_border_color', $border_color);
             
             echo '<div class="notice notice-success is-dismissible"><p>' . __('Einstellungen gespeichert.', 'news-ticker') . '</p></div>';
         }
@@ -24,6 +26,7 @@ function nt_settings_page() {
     $language = get_option('news_ticker_language', '');
     $refresh_interval = get_option('news_ticker_refresh_interval', 60);
     $entries_count = get_option('news_ticker_entries_count', 5);
+    $border_color = get_option('news_ticker_border_color', '#FF4500');
     
     // Verfügbare Sprachen
     $languages = [
@@ -70,6 +73,14 @@ function nt_settings_page() {
                         <p class="description"><?php _e('Standardanzahl der Einträge, die im Ticker angezeigt werden.', 'news-ticker'); ?></p>
                     </td>
                 </tr>
+                
+                <tr>
+                    <th scope="row"><?php _e('Randfarbe', 'news-ticker'); ?></th>
+                    <td>
+                        <input type="text" name="nt_border_color" value="<?php echo esc_attr($border_color); ?>" class="my-color-field" data-default-color="#FF4500" />
+                        <p class="description"><?php _e('Wählen Sie die Randfarbe für die News-Einträge.', 'news-ticker'); ?></p>
+                    </td>
+                </tr>
             </table>
             
             <p class="submit">
@@ -94,3 +105,4 @@ function nt_settings_page() {
     </div>
     <?php
 }
+?>

@@ -28,7 +28,7 @@ jQuery(document).ready(function ($) {
                     $.each(response, function(index, news) {
                         var imageHTML = news.image ? '<img src="'+news.image+'" alt="News Image">' : '';
                         var entry = '<div class="news-ticker-entry">'+
-                                        '<div class="news-ticker-dot"></div>'+
+                                        '<div class="news-ticker-dot" style="background-color: ' + newsTickerAjax.border_color + ';"></div>'+
                                         '<div class="news-ticker-content">'+
                                             imageHTML+
                                             '<h4>'+news.title+'</h4>'+

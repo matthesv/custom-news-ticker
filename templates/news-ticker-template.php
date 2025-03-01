@@ -6,9 +6,11 @@
  */
 
 if (!defined('ABSPATH')) exit;
+
+$border_color = get_option('news_ticker_border_color', '#FF4500');
 ?>
 <?php if ($query->have_posts()) : ?>
-<div class="news-ticker-container" data-category="<?php echo esc_attr($atts['category']); ?>">
+<div class="news-ticker-container" data-category="<?php echo esc_attr($atts['category']); ?>" style="border-left: 3px solid <?php echo esc_attr($border_color); ?>;">
     <?php while ($query->have_posts()) : $query->the_post(); ?>
         <?php 
         $time_diff = human_time_diff(get_the_time('U'), current_time('timestamp')); 
@@ -17,7 +19,7 @@ if (!defined('ABSPATH')) exit;
         $image = get_the_post_thumbnail(get_the_ID(), 'thumbnail'); 
         ?>
         <div class="news-ticker-entry">
-            <div class="news-ticker-dot"></div>
+            <div class="news-ticker-dot" style="background-color: <?php echo esc_attr($border_color); ?>;"></div>
             <div class="news-ticker-content">
                 <?php echo $image; ?>
                 <h4><?php the_title(); ?></h4>
