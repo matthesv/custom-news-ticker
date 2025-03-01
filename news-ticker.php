@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.2.0
+Version: 1.2.1
 Author: Matthes
 */
 
@@ -38,7 +38,7 @@ function news_ticker_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', 'news_ticker_enqueue_assets');
 
-Seite rendern
+// Seite rendern
 function news_ticker_settings_page() {
     ?>
     <div class="wrap">
