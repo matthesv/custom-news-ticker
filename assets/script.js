@@ -1,7 +1,17 @@
 jQuery(document).ready(function ($) {
+    // Loading-Indikator hinzufügen
+    function showLoading(container) {
+        container.html('<div class="news-ticker-loading">Lade Nachrichten...</div>');
+    }
+    
     function fetchLatestNews() {
         var tickerContainer = $('.news-ticker-container');
         var category = tickerContainer.data('category'); // Holt die Kategorie aus dem HTML-Container
+        
+        // Zeige Loading-Indikator beim ersten Laden
+        if (tickerContainer.find('.news-ticker-entry').length === 0) {
+            showLoading(tickerContainer);
+        }
 
         $.ajax({
             url: newsTickerAjax.ajax_url,
@@ -16,7 +26,7 @@ jQuery(document).ready(function ($) {
 
                 if(response && response.length) {
                     $.each(response, function(index, news) {
-                        var imageHTML = news.image ? '<img src="'+news.image+'" width="50" alt="News Image">' : '';
+                        var imageHTML = news.image ? '<img src="'+news.image+'" alt="News Image">' : '';
                         var entry = '<div class="news-ticker-entry">'+
                                         '<div class="news-ticker-dot"></div>'+
                                         '<div class="news-ticker-content">'+
@@ -28,16 +38,37 @@ jQuery(document).ready(function ($) {
                                     '</div>';
                         tickerContainer.append(entry);
                     });
+                    
+                    // Animation für neue Einträge
+                    setTimeout(function() {
+                        $('.news-ticker-entry').addClass('loaded');
+                    }, 100);
+                    
                 } else {
                     tickerContainer.append('<p>Keine News verfügbar.</p>');
                 }
             },
             error: function(xhr, status, error) {
                 console.error('News ticker AJAX error:', error);
+                tickerContainer.append('<p>Fehler beim Laden der Nachrichten.</p>');
             }
         });
     }
 
-    fetchLatestNews(); // Direkt beim Seitenladen aufrufen
-    setInterval(fetchLatestNews, 60000); // Danach alle 60 Sekunden wiederholen
+    // Ticker initial laden
+    fetchLatestNews();
+    
+    // Auto-Refresh alle 60 Sekunden
+    var refreshInterval = setInterval(fetchLatestNews, 60000);
+    
+    // Aufräumen bei Seitenverlassen
+    $(window).on('beforeunload', function() {
+        clearInterval(refreshInterval);
+    });
+    
+    // Manuelles Refresh durch Klicken auf den Ticker (optional)
+    $('.news-ticker-container').on('click', '.refresh-ticker', function(e) {
+        e.preventDefault();
+        fetchLatestNews();
+    });
 });
