@@ -27,8 +27,9 @@ jQuery(document).ready(function ($) {
                 if(response && response.length) {
                     $.each(response, function(index, news) {
                         var imageHTML = news.image ? '<img src="'+news.image+'" alt="News Image">' : '';
+                        var dotColor = news.border_color ? news.border_color : newsTickerAjax.border_color;
                         var entry = '<div class="news-ticker-entry">'+
-                                        '<div class="news-ticker-dot" style="background-color: ' + newsTickerAjax.border_color + ';"></div>'+
+                                        '<div class="news-ticker-dot" style="background-color: ' + dotColor + ';"></div>'+
                                         '<div class="news-ticker-content">'+
                                             imageHTML+
                                             '<h4>'+news.title+'</h4>'+

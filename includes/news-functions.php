@@ -39,11 +39,16 @@ function nt_get_news_items($query) {
             // Übersetze die Zeitangabe mit unserer neuen Funktion
             $translated_time = nt_translate_time($time_diff, $language);
             
+            // Individuelle Randfarbe aus dem Post Meta, oder Standard aus den Optionen
+            $custom_border_color = get_post_meta(get_the_ID(), 'nt_border_color', true);
+            $border_color = $custom_border_color ? $custom_border_color : get_option('news_ticker_border_color', '#FF4500');
+            
             $news_items[] = [
-                'title'   => get_the_title(),
-                'content' => apply_filters('the_content', get_the_content()),
-                'time'    => $translated_time,
-                'image'   => $image_url ? $image_url : '',
+                'title'        => get_the_title(),
+                'content'      => apply_filters('the_content', get_the_content()),
+                'time'         => $translated_time,
+                'image'        => $image_url ? $image_url : '',
+                'border_color' => $border_color,
             ];
         }
         wp_reset_postdata();
@@ -61,4 +66,5 @@ function nt_format_time($timestamp) {
     $time_diff = human_time_diff($timestamp, current_time('timestamp'));
     $language = get_option('news_ticker_language', '');
     return nt_translate_time($time_diff, $language);
-}
+} 
+?>

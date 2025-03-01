@@ -2,7 +2,21 @@
 if (!defined('ABSPATH')) exit;
 
 /**
- * Einstellungen-Seite für den News Ticker
+ * Fügt die Einstellungen-Seite dem WordPress-Admin-Menü hinzu.
+ */
+function nt_add_settings_menu() {
+    add_options_page(
+        __('News Ticker Einstellungen', 'news-ticker'),
+        __('News Ticker', 'news-ticker'),
+        'manage_options',
+        'news-ticker-settings',
+        'nt_settings_page'
+    );
+}
+add_action('admin_menu', 'nt_add_settings_menu');
+
+/**
+ * Rendert die Einstellungen-Seite für den News Ticker.
  */
 function nt_settings_page() {
     // Einstellungen speichern
@@ -78,7 +92,7 @@ function nt_settings_page() {
                     <th scope="row"><?php _e('Randfarbe', 'news-ticker'); ?></th>
                     <td>
                         <input type="text" name="nt_border_color" value="<?php echo esc_attr($border_color); ?>" class="my-color-field" data-default-color="#FF4500" />
-                        <p class="description"><?php _e('Wählen Sie die Randfarbe für die News-Einträge.', 'news-ticker'); ?></p>
+                        <p class="description"><?php _e('Wählen Sie die Standard-Randfarbe für die News-Einträge.', 'news-ticker'); ?></p>
                     </td>
                 </tr>
             </table>
