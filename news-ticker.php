@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.0
+Version: 1.0.1
 Author: Matthes
 */
 
@@ -29,7 +29,7 @@ function news_ticker_enqueue_assets() {
 add_action('wp_enqueue_scripts', 'news_ticker_enqueue_assets');
 
 // Plugin Update Checker laden (GitHub) - optional
-require_once FEEDBACK_VOTING_PLUGIN_DIR . 'includes/plugin-update-checker/plugin-update-checker.php';
+require_once NEWS_TICKER_PATH . 'includes/plugin-update-checker/plugin-update-checker.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 $myUpdateChecker = PucFactory::buildUpdateChecker(
