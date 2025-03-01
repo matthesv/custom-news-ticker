@@ -14,11 +14,12 @@ jQuery(document).ready(function ($) {
                 tickerContainer.empty(); // Löscht die alten Einträge und lädt neue
 
                 response.forEach(news => {
+                    let imageHTML = news.image ? `<img src="${news.image}" width="50" alt="News Image">` : ''; // Prüft, ob ein Bild existiert
                     let entry = `
                         <div class="news-ticker-entry">
                             <div class="news-ticker-dot"></div>
                             <div class="news-ticker-content">
-                                ${news.image ? `<img src="${news.image}" width="50">` : ''}
+                                ${imageHTML}
                                 <h4>${news.title}</h4>
                                 <p>${news.content}</p>
                                 <span class="news-ticker-time">${news.time}</span>
@@ -30,6 +31,6 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    // Starte AJAX-Update alle 60 Sekunden
-    setInterval(fetchLatestNews, 60000);
+    fetchLatestNews(); // 🔥 Direkt beim Seitenladen aufrufen
+    setInterval(fetchLatestNews, 60000); // Danach alle 60 Sekunden wiederholen
 });

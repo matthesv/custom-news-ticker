@@ -2,7 +2,6 @@
 if (!defined('ABSPATH')) exit;
 
 function fetch_latest_news() {
-    // Stelle sicher, dass eine Kategorie übergeben wird
     $category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : '';
 
     $args = [
@@ -12,7 +11,6 @@ function fetch_latest_news() {
         'order'          => 'DESC',
     ];
 
-    // Falls eine Kategorie angegeben wurde, filtere nach dieser
     if (!empty($category)) {
         $args['tax_query'] = [
             [
@@ -28,11 +26,13 @@ function fetch_latest_news() {
 
     while ($query->have_posts()) {
         $query->the_post();
+        $image_url = get_the_post_thumbnail_url(get_the_ID(), 'thumbnail');
+
         $news_items[] = [
             'title'   => get_the_title(),
             'content' => get_the_content(),
             'time'    => human_time_diff(get_the_time('U'), current_time('timestamp')) . ' ago',
-            'image'   => get_the_post_thumbnail_url(get_the_ID(), 'thumbnail'),
+            'image'   => $image_url ? $image_url : '', // 🔥 Falls kein Bild existiert, leere Zeichenkette statt NULL zurückgeben
         ];
     }
     wp_reset_postdata();
