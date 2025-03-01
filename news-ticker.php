@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.0.4
+Version: 1.0.5
 Author: Matthes
 */
 
@@ -18,10 +18,15 @@ require_once NEWS_TICKER_PATH . 'includes/post-type.php';
 require_once NEWS_TICKER_PATH . 'includes/shortcode.php';
 require_once NEWS_TICKER_PATH . 'includes/ajax-refresh.php';
 
-// Assets registrieren
+// Assets registrieren mit Cache-Busting
 function news_ticker_enqueue_assets() {
-    wp_enqueue_style('news-ticker-style', plugins_url('assets/style.css', __FILE__));
-    wp_enqueue_script('news-ticker-script', plugins_url('assets/script.js', __FILE__), ['jquery'], null, true);
+    $style_path = NEWS_TICKER_PATH . 'assets/style.css';
+    $script_path = NEWS_TICKER_PATH . 'assets/script.js';
+    $style_version = file_exists($style_path) ? filemtime($style_path) : false;
+    $script_version = file_exists($script_path) ? filemtime($script_path) : false;
+    
+    wp_enqueue_style('news-ticker-style', plugins_url('assets/style.css', __FILE__), array(), $style_version);
+    wp_enqueue_script('news-ticker-script', plugins_url('assets/script.js', __FILE__), array('jquery'), $script_version, true);
     wp_localize_script('news-ticker-script', 'newsTickerAjax', [
         'ajax_url' => admin_url('admin-ajax.php')
     ]);

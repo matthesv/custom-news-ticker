@@ -1,12 +1,18 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
+/**
+ * Rendert den News Ticker Shortcode.
+ *
+ * @param array $atts Shortcode Attribute.
+ * @return string HTML Ausgabe.
+ */
 function render_news_ticker($atts) {
-    $atts = shortcode_atts(['category' => ''], $atts);
+    $atts = shortcode_atts(['category' => '', 'posts_per_page' => 10], $atts, 'news_ticker');
 
     $args = [
         'post_type'      => 'news_ticker',
-        'posts_per_page' => 10,
+        'posts_per_page' => intval($atts['posts_per_page']),
         'orderby'        => 'date',
         'order'          => 'DESC',
     ];
@@ -23,24 +29,14 @@ function render_news_ticker($atts) {
 
     $query = new WP_Query($args);
 
-    ob_start();
-    echo '<div class="news-ticker-container" data-category="' . esc_attr($atts['category']) . '">';
-    while ($query->have_posts()) {
-        $query->the_post();
-        $time_diff = human_time_diff(get_the_time('U'), current_time('timestamp'));
-        $image = get_the_post_thumbnail(get_the_ID(), 'thumbnail') ?: '';
-
-        echo '<div class="news-ticker-entry">';
-        echo '<div class="news-ticker-dot"></div>';
-        echo '<div class="news-ticker-content">';
-        echo $image;
-        echo '<h4>' . get_the_title() . '</h4>';
-        echo '<p>' . get_the_content() . '</p>';
-        echo '<span class="news-ticker-time">' . $time_diff . ' ago</span>';
-        echo '</div>';
-        echo '</div>';
+    // Ermögliche Template-Override: Suche nach einem Template in deinem Theme
+    $template_path = locate_template('news-ticker-template.php');
+    if (!$template_path) {
+        $template_path = NEWS_TICKER_PATH . 'templates/news-ticker-template.php';
     }
-    echo '</div>';
+
+    ob_start();
+    include $template_path;
     wp_reset_postdata();
 
     return ob_get_clean();

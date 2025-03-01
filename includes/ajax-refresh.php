@@ -1,6 +1,9 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
+/**
+ * Holt die neuesten News-Posts und gibt sie als JSON zurück.
+ */
 function fetch_latest_news() {
     $category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : '';
 
@@ -30,9 +33,9 @@ function fetch_latest_news() {
 
         $news_items[] = [
             'title'   => get_the_title(),
-            'content' => get_the_content(),
+            'content' => apply_filters('the_content', get_the_content()),
             'time'    => human_time_diff(get_the_time('U'), current_time('timestamp')) . ' ago',
-            'image'   => $image_url ? $image_url : '', // 🔥 Falls kein Bild existiert, leere Zeichenkette statt NULL zurückgeben
+            'image'   => $image_url ? $image_url : '', // Falls kein Bild existiert, leere Zeichenkette statt NULL zurückgeben
         ];
     }
     wp_reset_postdata();
