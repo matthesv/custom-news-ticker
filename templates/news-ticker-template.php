@@ -7,6 +7,7 @@
 
 if (!defined('ABSPATH')) exit;
 ?>
+<?php if ($query->have_posts()) : ?>
 <div class="news-ticker-container" data-category="<?php echo esc_attr($atts['category']); ?>">
     <?php while ($query->have_posts()) : $query->the_post(); ?>
         <?php $time_diff = human_time_diff(get_the_time('U'), current_time('timestamp')); ?>
@@ -22,3 +23,8 @@ if (!defined('ABSPATH')) exit;
         </div>
     <?php endwhile; ?>
 </div>
+<?php else : ?>
+<div class="news-ticker-container">
+    <p>Keine News verfügbar.</p>
+</div>
+<?php endif; ?>

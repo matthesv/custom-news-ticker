@@ -1,6 +1,8 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
+require_once NEWS_TICKER_PATH . 'includes/news-functions.php';
+
 /**
  * Rendert den News Ticker Shortcode.
  *
@@ -27,7 +29,7 @@ function render_news_ticker($atts) {
         ];
     }
 
-    $query = new WP_Query($args);
+    $query = nt_get_news_query($args);
 
     // Ermögliche Template-Override: Suche nach einem Template in deinem Theme
     $template_path = locate_template('news-ticker-template.php');

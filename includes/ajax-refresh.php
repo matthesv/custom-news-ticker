@@ -1,10 +1,17 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
+require_once NEWS_TICKER_PATH . 'includes/news-functions.php';
+
 /**
  * Holt die neuesten News-Posts und gibt sie als JSON zurück.
  */
 function fetch_latest_news() {
+    // Sicherheitsüberprüfung: Prüfe Nonce
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'news_ticker_nonce')) {
+        wp_send_json_error('Unauthorized');
+    }
+
     $category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : '';
 
     $args = [
@@ -24,21 +31,8 @@ function fetch_latest_news() {
         ];
     }
 
-    $query = new WP_Query($args);
-    $news_items = [];
-
-    while ($query->have_posts()) {
-        $query->the_post();
-        $image_url = get_the_post_thumbnail_url(get_the_ID(), 'thumbnail');
-
-        $news_items[] = [
-            'title'   => get_the_title(),
-            'content' => apply_filters('the_content', get_the_content()),
-            'time'    => human_time_diff(get_the_time('U'), current_time('timestamp')) . ' ago',
-            'image'   => $image_url ? $image_url : '', // Falls kein Bild existiert, leere Zeichenkette statt NULL zurückgeben
-        ];
-    }
-    wp_reset_postdata();
+    $query = nt_get_news_query($args);
+    $news_items = nt_get_news_items($query);
 
     wp_send_json($news_items);
 }

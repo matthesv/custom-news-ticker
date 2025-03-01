@@ -23,7 +23,7 @@ function register_news_ticker_post_type() {
         'menu_icon' => 'dashicons-megaphone',
         'has_archive' => true,
         'rewrite' => ['slug' => 'news-ticker'],
-        'taxonomies' => ['ticker_category'], // Hier die Taxonomie hinzufügen
+        'taxonomies' => ['ticker_category'],
     ];
     register_post_type('news_ticker', $args);
 }
@@ -45,7 +45,7 @@ function register_news_ticker_taxonomy() {
     $args = [
         'labels' => $labels,
         'public' => true,
-        'hierarchical' => true, // Ermöglicht übergeordnete Kategorien
+        'hierarchical' => true,
         'show_admin_column' => true,
         'rewrite' => array('slug' => 'ticker-category'),
     ];

@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.0.5
+Version: 1.1.0
 Author: Matthes
 */
 
@@ -15,10 +15,11 @@ define('NEWS_TICKER_PATH', plugin_dir_path(__FILE__));
 
 // Dateien einbinden
 require_once NEWS_TICKER_PATH . 'includes/post-type.php';
+require_once NEWS_TICKER_PATH . 'includes/news-functions.php'; // Gemeinsame Funktionen
 require_once NEWS_TICKER_PATH . 'includes/shortcode.php';
 require_once NEWS_TICKER_PATH . 'includes/ajax-refresh.php';
 
-// Assets registrieren mit Cache-Busting
+// Assets registrieren mit Cache-Busting und Nonce
 function news_ticker_enqueue_assets() {
     $style_path = NEWS_TICKER_PATH . 'assets/style.css';
     $script_path = NEWS_TICKER_PATH . 'assets/script.js';
@@ -28,7 +29,8 @@ function news_ticker_enqueue_assets() {
     wp_enqueue_style('news-ticker-style', plugins_url('assets/style.css', __FILE__), array(), $style_version);
     wp_enqueue_script('news-ticker-script', plugins_url('assets/script.js', __FILE__), array('jquery'), $script_version, true);
     wp_localize_script('news-ticker-script', 'newsTickerAjax', [
-        'ajax_url' => admin_url('admin-ajax.php')
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'nonce'    => wp_create_nonce('news_ticker_nonce')
     ]);
 }
 add_action('wp_enqueue_scripts', 'news_ticker_enqueue_assets');
