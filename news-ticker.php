@@ -27,3 +27,14 @@ function news_ticker_enqueue_assets() {
     ]);
 }
 add_action('wp_enqueue_scripts', 'news_ticker_enqueue_assets');
+
+// Plugin Update Checker laden (GitHub) - optional
+require_once FEEDBACK_VOTING_PLUGIN_DIR . 'includes/plugin-update-checker/plugin-update-checker.php';
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$myUpdateChecker = PucFactory::buildUpdateChecker(
+    'https://github.com/matthesv/custom-news-ticker/',
+    __FILE__,
+    'custom-news-ticker'
+);
+$myUpdateChecker->setBranch('main');
