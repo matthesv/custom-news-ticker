@@ -48,6 +48,17 @@ function nt_get_news_query($args = array()) {
 function nt_get_news_items($query) {
     $news_items = [];
     
+    // Sortiere die Posts manuell basierend auf dem gewählten Datum (Aktualisierungsdatum falls aktiviert, sonst Veröffentlichungsdatum)
+    if (!empty($query->posts)) {
+        usort($query->posts, function($a, $b) {
+            $a_use_updated = get_post_meta($a->ID, 'nt_use_updated_date', true) === 'yes';
+            $a_date = $a_use_updated ? strtotime($a->post_modified) : strtotime($a->post_date);
+            $b_use_updated = get_post_meta($b->ID, 'nt_use_updated_date', true) === 'yes';
+            $b_date = $b_use_updated ? strtotime($b->post_modified) : strtotime($b->post_date);
+            return $b_date - $a_date;
+        });
+    }
+    
     // Hole die gewählte Sprache aus den Einstellungen
     $language = get_option('news_ticker_language', '');
     
@@ -55,7 +66,11 @@ function nt_get_news_items($query) {
         while ($query->have_posts()) {
             $query->the_post();
             $image_url = get_the_post_thumbnail_url(get_the_ID(), 'thumbnail');
-            $time_diff = human_time_diff(get_the_time('U'), current_time('timestamp'));
+            
+            // Verwende das Aktualisierungsdatum, falls aktiviert, ansonsten das Veröffentlichungsdatum
+            $use_update_date = get_post_meta(get_the_ID(), 'nt_use_updated_date', true) === 'yes';
+            $date_timestamp = $use_update_date ? get_the_modified_time('U') : get_the_time('U');
+            $time_diff = human_time_diff($date_timestamp, current_time('timestamp'));
             
             // Übersetze die Zeitangabe mit unserer neuen Funktion
             $translated_time = nt_translate_time($time_diff, $language);

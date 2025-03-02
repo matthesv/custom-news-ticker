@@ -31,6 +31,17 @@ function render_news_ticker($atts) {
 
     $query = nt_get_news_query($args);
 
+    // Sortiere die Posts manuell basierend auf dem gewählten Datum (Aktualisierungsdatum falls aktiviert, sonst Veröffentlichungsdatum)
+    if (!empty($query->posts)) {
+        usort($query->posts, function($a, $b) {
+            $a_use_updated = get_post_meta($a->ID, 'nt_use_updated_date', true) === 'yes';
+            $a_date = $a_use_updated ? strtotime($a->post_modified) : strtotime($a->post_date);
+            $b_use_updated = get_post_meta($b->ID, 'nt_use_updated_date', true) === 'yes';
+            $b_date = $b_use_updated ? strtotime($b->post_modified) : strtotime($b->post_date);
+            return $b_date - $a_date;
+        });
+    }
+
     // Ermögliche Template-Override: Suche nach einem Template in deinem Theme
     $template_path = locate_template('news-ticker-template.php');
     if (!$template_path) {
@@ -45,3 +56,4 @@ function render_news_ticker($atts) {
 }
 
 add_shortcode('news_ticker', 'render_news_ticker');
+?>

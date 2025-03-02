@@ -13,7 +13,9 @@ $default_color = nt_get_border_color();
 <div class="news-ticker-container" data-category="<?php echo esc_attr($atts['category']); ?>" style="border-left: 3px solid <?php echo esc_attr($default_color); ?>;">
     <?php while ($query->have_posts()) : $query->the_post(); ?>
         <?php 
-        $time_diff = human_time_diff(get_the_time('U'), current_time('timestamp')); 
+        $use_update_date = get_post_meta(get_the_ID(), 'nt_use_updated_date', true) === 'yes';
+        $date_timestamp = $use_update_date ? get_the_modified_time('U') : get_the_time('U');
+        $time_diff = human_time_diff($date_timestamp, current_time('timestamp'));
         $language = get_option('news_ticker_language', '');
         $translated_time = nt_translate_time($time_diff, $language);
         $image = get_the_post_thumbnail(get_the_ID(), 'thumbnail'); 
