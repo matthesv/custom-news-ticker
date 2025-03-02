@@ -91,7 +91,7 @@ function nt_get_news_items($query) {
 }
 
 /**
- * Formatiert die Zeit für die Anzeige im Ticker mit Übersetzung
+ * Formatiert die Zeit für die Anzeige im Ticker mit Übersetzung.
  *
  * @param int $timestamp Unix-Zeitstempel
  * @return string Formatierte und übersetzte Zeit
@@ -111,15 +111,12 @@ function nt_format_time($timestamp) {
 function nt_get_border_color() {
     $color_source = get_option('news_ticker_color_source', 'custom');
     if ($color_source === 'primary') {
-        $theme_color = get_theme_mod('primary_color');
-        if ($theme_color) {
-            return $theme_color;
-        }
+        // Verwende die Theme Primärfarbe, mit Fallback auf '#0073aa'
+        return get_theme_mod('primary_color', '#0073aa');
     } elseif ($color_source === 'secondary') {
-        $theme_color = get_theme_mod('secondary_color');
-        if ($theme_color) {
-            return $theme_color;
-        }
+        // Verwende die Theme Sekundärfarbe, mit Fallback auf '#00a0d2'
+        return get_theme_mod('secondary_color', '#00a0d2');
     }
     return get_option('news_ticker_border_color', '#FF4500');
 }
+?>
