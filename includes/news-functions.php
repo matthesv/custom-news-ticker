@@ -2,6 +2,27 @@
 if (!defined('ABSPATH')) exit;
 
 /**
+ * Konvertiert eine Hex-Farbe in einen RGBA-String.
+ *
+ * @param string $hex Die Hex-Farbe (z. B. #FF4500).
+ * @param float $alpha Der Alpha-Wert (Standard 1).
+ * @return string Der RGBA-Farbstring.
+ */
+function nt_hex_to_rgba($hex, $alpha = 1) {
+    $hex = str_replace("#", "", $hex);
+    if(strlen($hex) == 3) {
+        $r = hexdec(str_repeat(substr($hex,0,1),2));
+        $g = hexdec(str_repeat(substr($hex,1,1),2));
+        $b = hexdec(str_repeat(substr($hex,2,1),2));
+    } else {
+        $r = hexdec(substr($hex,0,2));
+        $g = hexdec(substr($hex,2,2));
+        $b = hexdec(substr($hex,4,2));
+    }
+    return "rgba($r, $g, $b, $alpha)";
+}
+
+/**
  * Holt die WP_Query für News-Ticker Beiträge basierend auf übergebenen Argumenten.
  *
  * @param array $args Argumente für die Query.

@@ -21,7 +21,7 @@ $default_color = get_option('news_ticker_border_color', '#FF4500');
         $color = $custom_color ? $custom_color : $default_color;
         ?>
         <div class="news-ticker-entry">
-            <div class="news-ticker-dot" style="background-color: <?php echo esc_attr($color); ?>;"></div>
+            <div class="news-ticker-dot" style="--dot-color: <?php echo esc_attr($color); ?>; --dot-color-pulse: <?php echo nt_hex_to_rgba($color, 0.4); ?>; --dot-color-pulse-transparent: <?php echo nt_hex_to_rgba($color, 0); ?>; background-color: <?php echo esc_attr($color); ?>;"></div>
             <div class="news-ticker-content">
                 <?php echo $image; ?>
                 <h4><?php the_title(); ?></h4>
