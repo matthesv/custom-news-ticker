@@ -45,7 +45,9 @@ $default_color = nt_get_border_color();
     <?php endwhile; ?>
 </div>
 <?php if ($query->max_num_pages > 1) : ?>
-    <button id="news-ticker-load-more" class="news-ticker-load-more">Mehr Laden</button>
+    <button id="news-ticker-load-more" class="news-ticker-load-more">
+        <span class="dashicons dashicons-arrow-down-alt2"></span> Mehr Laden
+    </button>
 <?php endif; ?>
 <?php else : ?>
 <div class="news-ticker-container">

@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.3.1
+Version: 1.3.2
 Author: Matthes
 */
 
@@ -27,6 +27,9 @@ require_once NEWS_TICKER_PATH . 'includes/admin-scripts.php'; // Admin Scripts f
 
 // Assets registrieren mit Cache-Busting und Nonce
 function news_ticker_enqueue_assets() {
+    // Dashicons für Frontend laden (für den "Mehr Laden"-Button)
+    wp_enqueue_style('dashicons');
+
     $style_path = NEWS_TICKER_PATH . 'assets/style.css';
     $script_path = NEWS_TICKER_PATH . 'assets/script.js';
     $style_version = file_exists($style_path) ? filemtime($style_path) : false;
