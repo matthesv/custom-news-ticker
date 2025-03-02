@@ -60,9 +60,16 @@ function nt_get_news_items($query) {
             // Übersetze die Zeitangabe mit unserer neuen Funktion
             $translated_time = nt_translate_time($time_diff, $language);
             
-            // Individuelle Randfarbe aus dem Post Meta, oder Standard aus den Optionen/Theme
-            $custom_border_color = get_post_meta(get_the_ID(), 'nt_border_color', true);
-            $border_color = $custom_border_color ? $custom_border_color : nt_get_border_color();
+            // Prüfe, welche Farbquelle in den Einstellungen definiert wurde
+            $color_source = get_option('news_ticker_color_source', 'custom');
+            if ($color_source === 'custom') {
+                // Nur wenn "custom" ausgewählt ist, individuelle Farben aus dem Eintrag berücksichtigen
+                $custom_border_color = get_post_meta(get_the_ID(), 'nt_border_color', true);
+                $border_color = $custom_border_color ? $custom_border_color : nt_get_border_color();
+            } else {
+                // Bei Theme-Farben immer die globale Farbe verwenden
+                $border_color = nt_get_border_color();
+            }
             
             $news_items[] = [
                 'title'        => get_the_title(),
