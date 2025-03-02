@@ -31,13 +31,14 @@ jQuery(document).ready(function ($) {
             var rgbaTransparent = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0)";
             var dotStyle = "background-color:" + dotColor + "; --dot-color:" + dotColor + "; --dot-color-pulse:" + rgbaPulse + "; --dot-color-pulse-transparent:" + rgbaTransparent + ";";
             
+            // Hinzufügen des data-full-date Attributes für den Tooltip
             html += '<div class="news-ticker-entry">'+
                         '<div class="news-ticker-dot" style="' + dotStyle + '"></div>'+
                         '<div class="news-ticker-content">'+
                             imageHTML+
                             '<h4>'+news.title+'</h4>'+
                             '<p>'+news.content+'</p>'+
-                            '<span class="news-ticker-time">'+news.time+'</span>'+
+                            '<span class="news-ticker-time" data-full-date="'+news.full_date+'">'+news.time+'</span>'+
                         '</div>'+
                     '</div>';
         });
@@ -108,6 +109,29 @@ jQuery(document).ready(function ($) {
         e.preventDefault();
         var currentOffset = $('.news-ticker-container').data('offset') || 0;
         loadNews('load_more', currentOffset);
+    });
+    
+    // Tooltip-Logik: Bei Hover über die Zeitangabe wird das vollständige Datum angezeigt
+    $(document).on('mouseenter', '.news-ticker-time', function() {
+        var fullDate = $(this).data('full-date');
+        if (fullDate) {
+            var tooltip = $('<div class="news-ticker-tooltip"></div>').text(fullDate);
+            $('body').append(tooltip);
+            tooltip.css({
+                top: $(this).offset().top - tooltip.outerHeight() - 10,
+                left: $(this).offset().left,
+                display: 'none'
+            }).fadeIn(200);
+            $(this).data('tooltip', tooltip);
+        }
+    }).on('mouseleave', '.news-ticker-time', function() {
+        var tooltip = $(this).data('tooltip');
+        if (tooltip) {
+            tooltip.fadeOut(200, function() {
+                $(this).remove();
+            });
+            $(this).removeData('tooltip');
+        }
     });
     
     // Aufräumen bei Seitenverlassen

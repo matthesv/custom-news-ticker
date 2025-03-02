@@ -18,6 +18,8 @@ $default_color = nt_get_border_color();
         $time_diff = human_time_diff($date_timestamp, current_time('timestamp'));
         $language = get_option('news_ticker_language', '');
         $translated_time = nt_translate_time($time_diff, $language);
+        // Berechne das vollständige Datum
+        $full_date = date_i18n('d.m.Y, H:i \U\h\r', $date_timestamp);
         $image = get_the_post_thumbnail(get_the_ID(), 'thumbnail'); 
         
         // Prüfe, ob für diesen Eintrag die globale Farbe verwendet werden soll
@@ -39,7 +41,8 @@ $default_color = nt_get_border_color();
                 <?php echo $image; ?>
                 <h4><?php the_title(); ?></h4>
                 <p><?php the_content(); ?></p>
-                <span class="news-ticker-time"><?php echo esc_html($translated_time); ?></span>
+                <!-- Das data-full-date Attribut enthält das vollständige Datum -->
+                <span class="news-ticker-time" data-full-date="<?php echo esc_attr($full_date); ?>"><?php echo esc_html($translated_time); ?></span>
             </div>
         </div>
     <?php endwhile; ?>

@@ -97,6 +97,7 @@
     color: #888;
     font-style: italic;
     margin-top: 5px;
+    cursor: default;
 }
 
 /* Loading state */
@@ -154,4 +155,17 @@
 
 .news-ticker-load-more:hover {
     opacity: 0.8;
+}
+
+/* Tooltip für die Zeitangabe */
+.news-ticker-tooltip {
+    position: absolute;
+    background: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    z-index: 9999;
+    display: none;
 }

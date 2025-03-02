@@ -72,8 +72,11 @@ function nt_get_news_items($query) {
             $date_timestamp = $use_update_date ? get_the_modified_time('U') : get_the_time('U');
             $time_diff = human_time_diff($date_timestamp, current_time('timestamp'));
             
-            // Übersetze die Zeitangabe mit unserer neuen Funktion
+            // Übersetze die Zeitangabe
             $translated_time = nt_translate_time($time_diff, $language);
+            
+            // Berechne das vollständige Datum im gewünschten Format
+            $full_date = date_i18n('d.m.Y, H:i \U\h\r', $date_timestamp);
             
             // Prüfe, ob für diesen Eintrag die globale Farbe verwendet werden soll
             $use_global_color = get_post_meta(get_the_ID(), 'nt_use_global_color', true);
@@ -93,6 +96,7 @@ function nt_get_news_items($query) {
                 'title'        => get_the_title(),
                 'content'      => apply_filters('the_content', get_the_content()),
                 'time'         => $translated_time,
+                'full_date'    => $full_date, // Neues Feld für das vollständige Datum
                 'image'        => $image_url ? $image_url : '',
                 'border_color' => $border_color,
             ];
