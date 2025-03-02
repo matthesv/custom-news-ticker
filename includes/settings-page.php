@@ -45,6 +45,10 @@ function nt_settings_page() {
     $border_color = get_option('news_ticker_border_color', '#FF4500');
     $color_source = get_option('news_ticker_color_source', 'custom');
     
+    // Theme-Farben abrufen
+    $primary_color = get_theme_mod('primary_color', '#0073aa');
+    $secondary_color = get_theme_mod('secondary_color', '#00a0d2');
+    
     // Verfügbare Sprachen
     $languages = [
         '' => __('WordPress-Sprache verwenden', 'news-ticker'),
@@ -99,13 +103,19 @@ function nt_settings_page() {
                                 <input type="radio" name="nt_color_source" value="custom" <?php checked($color_source, 'custom'); ?> />
                                 <?php _e('Benutzerdefinierte Farbe', 'news-ticker'); ?>
                             </label><br>
-                            <label>
+                            
+                            <label style="display: flex; align-items: center; margin-top: 8px;">
                                 <input type="radio" name="nt_color_source" value="primary" <?php checked($color_source, 'primary'); ?> />
-                                <?php _e('Theme Primärfarbe', 'news-ticker'); ?>
+                                <span style="margin: 0 8px;"><?php _e('Theme Primärfarbe', 'news-ticker'); ?></span>
+                                <span class="color-preview" style="display: inline-block; width: 20px; height: 20px; background-color: <?php echo esc_attr($primary_color); ?>; border: 1px solid #ddd; border-radius: 50%;"></span>
+                                <code style="margin-left: 8px;"><?php echo esc_html($primary_color); ?></code>
                             </label><br>
-                            <label>
+                            
+                            <label style="display: flex; align-items: center; margin-top: 8px;">
                                 <input type="radio" name="nt_color_source" value="secondary" <?php checked($color_source, 'secondary'); ?> />
-                                <?php _e('Theme Sekundärfarbe', 'news-ticker'); ?>
+                                <span style="margin: 0 8px;"><?php _e('Theme Sekundärfarbe', 'news-ticker'); ?></span>
+                                <span class="color-preview" style="display: inline-block; width: 20px; height: 20px; background-color: <?php echo esc_attr($secondary_color); ?>; border: 1px solid #ddd; border-radius: 50%;"></span>
+                                <code style="margin-left: 8px;"><?php echo esc_html($secondary_color); ?></code>
                             </label>
                         </fieldset>
                         <p class="description"><?php _e('Wählen Sie, ob die Standard-Randfarbe aus einer benutzerdefinierten Farbe oder aus den Theme-Farben entnommen werden soll.', 'news-ticker'); ?></p>
