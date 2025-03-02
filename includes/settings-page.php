@@ -26,11 +26,13 @@ function nt_settings_page() {
             $refresh_interval = isset($_POST['nt_refresh_interval']) ? intval($_POST['nt_refresh_interval']) : 60;
             $entries_count = isset($_POST['nt_entries_count']) ? intval($_POST['nt_entries_count']) : 5;
             $border_color = isset($_POST['nt_border_color']) ? sanitize_text_field($_POST['nt_border_color']) : '#FF4500';
+            $color_source = isset($_POST['nt_color_source']) ? sanitize_text_field($_POST['nt_color_source']) : 'custom';
             
             update_option('news_ticker_language', $language);
             update_option('news_ticker_refresh_interval', $refresh_interval);
             update_option('news_ticker_entries_count', $entries_count);
             update_option('news_ticker_border_color', $border_color);
+            update_option('news_ticker_color_source', $color_source);
             
             echo '<div class="notice notice-success is-dismissible"><p>' . __('Einstellungen gespeichert.', 'news-ticker') . '</p></div>';
         }
@@ -41,6 +43,7 @@ function nt_settings_page() {
     $refresh_interval = get_option('news_ticker_refresh_interval', 60);
     $entries_count = get_option('news_ticker_entries_count', 5);
     $border_color = get_option('news_ticker_border_color', '#FF4500');
+    $color_source = get_option('news_ticker_color_source', 'custom');
     
     // Verfügbare Sprachen
     $languages = [
@@ -89,10 +92,31 @@ function nt_settings_page() {
                 </tr>
                 
                 <tr>
-                    <th scope="row"><?php _e('Randfarbe', 'news-ticker'); ?></th>
+                    <th scope="row"><?php _e('Farbquelle für den Rand', 'news-ticker'); ?></th>
+                    <td>
+                        <fieldset>
+                            <label>
+                                <input type="radio" name="nt_color_source" value="custom" <?php checked($color_source, 'custom'); ?> />
+                                <?php _e('Benutzerdefinierte Farbe', 'news-ticker'); ?>
+                            </label><br>
+                            <label>
+                                <input type="radio" name="nt_color_source" value="primary" <?php checked($color_source, 'primary'); ?> />
+                                <?php _e('Theme Primärfarbe', 'news-ticker'); ?>
+                            </label><br>
+                            <label>
+                                <input type="radio" name="nt_color_source" value="secondary" <?php checked($color_source, 'secondary'); ?> />
+                                <?php _e('Theme Sekundärfarbe', 'news-ticker'); ?>
+                            </label>
+                        </fieldset>
+                        <p class="description"><?php _e('Wählen Sie, ob die Standard-Randfarbe aus einer benutzerdefinierten Farbe oder aus den Theme-Farben entnommen werden soll.', 'news-ticker'); ?></p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row"><?php _e('Benutzerdefinierte Randfarbe', 'news-ticker'); ?></th>
                     <td>
                         <input type="text" name="nt_border_color" value="<?php echo esc_attr($border_color); ?>" class="my-color-field" data-default-color="#FF4500" />
-                        <p class="description"><?php _e('Wählen Sie die Standard-Randfarbe für die News-Einträge.', 'news-ticker'); ?></p>
+                        <p class="description"><?php _e('Wählen Sie die Farbe, die verwendet wird, wenn "Benutzerdefinierte Farbe" ausgewählt ist.', 'news-ticker'); ?></p>
                     </td>
                 </tr>
             </table>

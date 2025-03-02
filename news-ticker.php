@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.2.4
+Version: 1.2.5
 Author: Matthes
 */
 
@@ -22,6 +22,7 @@ require_once NEWS_TICKER_PATH . 'includes/ajax-refresh.php';
 require_once NEWS_TICKER_PATH . 'includes/time-translations.php'; // Neue Übersetzungsfunktionen
 require_once NEWS_TICKER_PATH . 'includes/settings-page.php'; // Einstellungen-Seite
 require_once NEWS_TICKER_PATH . 'includes/meta-box.php'; // Meta Box für individuelle Randfarbe
+require_once NEWS_TICKER_PATH . 'includes/admin-scripts.php'; // Admin Scripts für Farbpicker
 
 // Assets registrieren mit Cache-Busting und Nonce
 function news_ticker_enqueue_assets() {
@@ -36,7 +37,7 @@ function news_ticker_enqueue_assets() {
         'ajax_url'    => admin_url('admin-ajax.php'),
         'nonce'       => wp_create_nonce('news_ticker_nonce'),
         'language'    => substr(get_locale(), 0, 2),
-        'border_color'=> get_option('news_ticker_border_color', '#FF4500')
+        'border_color'=> nt_get_border_color() // Nutzt die Funktion, die ggf. Theme-Farben berücksichtigt
     ]);
 }
 add_action('wp_enqueue_scripts', 'news_ticker_enqueue_assets');

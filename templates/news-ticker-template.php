@@ -7,7 +7,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-$default_color = get_option('news_ticker_border_color', '#FF4500');
+$default_color = nt_get_border_color();
 ?>
 <?php if ($query->have_posts()) : ?>
 <div class="news-ticker-container" data-category="<?php echo esc_attr($atts['category']); ?>" style="border-left: 3px solid <?php echo esc_attr($default_color); ?>;">

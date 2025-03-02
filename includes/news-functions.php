@@ -60,9 +60,9 @@ function nt_get_news_items($query) {
             // Übersetze die Zeitangabe mit unserer neuen Funktion
             $translated_time = nt_translate_time($time_diff, $language);
             
-            // Individuelle Randfarbe aus dem Post Meta, oder Standard aus den Optionen
+            // Individuelle Randfarbe aus dem Post Meta, oder Standard aus den Optionen/Theme
             $custom_border_color = get_post_meta(get_the_ID(), 'nt_border_color', true);
-            $border_color = $custom_border_color ? $custom_border_color : get_option('news_ticker_border_color', '#FF4500');
+            $border_color = $custom_border_color ? $custom_border_color : nt_get_border_color();
             
             $news_items[] = [
                 'title'        => get_the_title(),
@@ -87,5 +87,27 @@ function nt_format_time($timestamp) {
     $time_diff = human_time_diff($timestamp, current_time('timestamp'));
     $language = get_option('news_ticker_language', '');
     return nt_translate_time($time_diff, $language);
-} 
+}
+
+/**
+ * Bestimmt die Standard-Randfarbe des News Tickers.
+ * Prüft, ob als Farbquelle "primary" oder "secondary" aus dem Theme gewählt wurde.
+ *
+ * @return string Hex-Farbcode
+ */
+function nt_get_border_color() {
+    $color_source = get_option('news_ticker_color_source', 'custom');
+    if ($color_source === 'primary') {
+        $theme_color = get_theme_mod('primary_color');
+        if ($theme_color) {
+            return $theme_color;
+        }
+    } elseif ($color_source === 'secondary') {
+        $theme_color = get_theme_mod('secondary_color');
+        if ($theme_color) {
+            return $theme_color;
+        }
+    }
+    return get_option('news_ticker_border_color', '#FF4500');
+}
 ?>

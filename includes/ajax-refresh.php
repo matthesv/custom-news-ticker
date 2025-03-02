@@ -39,3 +39,4 @@ function fetch_latest_news() {
 
 add_action('wp_ajax_fetch_news', 'fetch_latest_news');
 add_action('wp_ajax_nopriv_fetch_news', 'fetch_latest_news');
+?>
