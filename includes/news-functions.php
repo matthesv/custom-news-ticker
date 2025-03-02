@@ -77,22 +77,19 @@ function nt_get_news_items($query) {
             
             // Prüfe, ob für diesen Eintrag die globale Farbe verwendet werden soll
             $use_global_color = get_post_meta(get_the_ID(), 'nt_use_global_color', true);
-            
-            // Wenn nicht definiert, standardmäßig globale Farbe verwenden
             if ($use_global_color === '') {
                 $use_global_color = 'yes';
             }
             
             if ($use_global_color === 'yes') {
-                // Globale Farbe verwenden
                 $border_color = nt_get_border_color();
             } else {
-                // Individuelle Farbe verwenden
                 $custom_border_color = get_post_meta(get_the_ID(), 'nt_border_color', true);
                 $border_color = $custom_border_color ? $custom_border_color : nt_get_border_color();
             }
             
             $news_items[] = [
+                'ID'           => get_the_ID(),
                 'title'        => get_the_title(),
                 'content'      => apply_filters('the_content', get_the_content()),
                 'time'         => $translated_time,
@@ -126,10 +123,8 @@ function nt_format_time($timestamp) {
 function nt_get_border_color() {
     $color_source = get_option('news_ticker_color_source', 'custom');
     if ($color_source === 'primary') {
-        // Verwende die Theme Primärfarbe, mit Fallback auf '#0073aa'
         return get_theme_mod('primary_color', '#0073aa');
     } elseif ($color_source === 'secondary') {
-        // Verwende die Theme Sekundärfarbe, mit Fallback auf '#00a0d2'
         return get_theme_mod('secondary_color', '#00a0d2');
     }
     return get_option('news_ticker_border_color', '#FF4500');

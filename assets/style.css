@@ -130,4 +130,21 @@
 
 .news-ticker-entry {
     animation: fadeIn 0.5s ease-out;
-} 
+}
+
+/* Load More Button */
+.news-ticker-load-more {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #FF4500;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    text-align: center;
+}
+.news-ticker-load-more:hover {
+    opacity: 0.8;
+}

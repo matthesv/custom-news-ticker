@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) exit;
 $default_color = nt_get_border_color();
 ?>
 <?php if ($query->have_posts()) : ?>
-<div class="news-ticker-container" data-category="<?php echo esc_attr($atts['category']); ?>" style="border-left: 3px solid <?php echo esc_attr($default_color); ?>;">
+<div class="news-ticker-container" data-category="<?php echo esc_attr($atts['category']); ?>" data-posts-per-page="<?php echo intval($query->query_vars['posts_per_page']); ?>" data-offset="<?php echo count($query->posts); ?>" style="border-left: 3px solid <?php echo esc_attr($default_color); ?>;">
     <?php while ($query->have_posts()) : $query->the_post(); ?>
         <?php 
         $use_update_date = get_post_meta(get_the_ID(), 'nt_use_updated_date', true) === 'yes';
@@ -22,17 +22,13 @@ $default_color = nt_get_border_color();
         
         // Prüfe, ob für diesen Eintrag die globale Farbe verwendet werden soll
         $use_global_color = get_post_meta(get_the_ID(), 'nt_use_global_color', true);
-        
-        // Wenn nicht definiert, standardmäßig globale Farbe verwenden
         if ($use_global_color === '') {
             $use_global_color = 'yes';
         }
         
         if ($use_global_color === 'yes') {
-            // Globale Farbe verwenden
             $color = $default_color;
         } else {
-            // Individuelle Farbe verwenden
             $custom_color = get_post_meta(get_the_ID(), 'nt_border_color', true);
             $color = $custom_color ? $custom_color : $default_color;
         }
@@ -48,6 +44,9 @@ $default_color = nt_get_border_color();
         </div>
     <?php endwhile; ?>
 </div>
+<?php if ($query->max_num_pages > 1) : ?>
+    <button id="news-ticker-load-more" class="news-ticker-load-more">Mehr Laden</button>
+<?php endif; ?>
 <?php else : ?>
 <div class="news-ticker-container">
     <p><?php _e('Keine News verfügbar.', 'news-ticker'); ?></p>
