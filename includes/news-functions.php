@@ -60,15 +60,21 @@ function nt_get_news_items($query) {
             // Übersetze die Zeitangabe mit unserer neuen Funktion
             $translated_time = nt_translate_time($time_diff, $language);
             
-            // Prüfe, welche Farbquelle in den Einstellungen definiert wurde
-            $color_source = get_option('news_ticker_color_source', 'custom');
-            if ($color_source === 'custom') {
-                // Nur wenn "custom" ausgewählt ist, individuelle Farben aus dem Eintrag berücksichtigen
+            // Prüfe, ob für diesen Eintrag die globale Farbe verwendet werden soll
+            $use_global_color = get_post_meta(get_the_ID(), 'nt_use_global_color', true);
+            
+            // Wenn nicht definiert, standardmäßig globale Farbe verwenden
+            if ($use_global_color === '') {
+                $use_global_color = 'yes';
+            }
+            
+            if ($use_global_color === 'yes') {
+                // Globale Farbe verwenden
+                $border_color = nt_get_border_color();
+            } else {
+                // Individuelle Farbe verwenden
                 $custom_border_color = get_post_meta(get_the_ID(), 'nt_border_color', true);
                 $border_color = $custom_border_color ? $custom_border_color : nt_get_border_color();
-            } else {
-                // Bei Theme-Farben immer die globale Farbe verwenden
-                $border_color = nt_get_border_color();
             }
             
             $news_items[] = [
@@ -117,4 +123,3 @@ function nt_get_border_color() {
     }
     return get_option('news_ticker_border_color', '#FF4500');
 }
-?>

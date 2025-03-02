@@ -17,8 +17,23 @@ $default_color = nt_get_border_color();
         $language = get_option('news_ticker_language', '');
         $translated_time = nt_translate_time($time_diff, $language);
         $image = get_the_post_thumbnail(get_the_ID(), 'thumbnail'); 
-        $custom_color = get_post_meta(get_the_ID(), 'nt_border_color', true);
-        $color = $custom_color ? $custom_color : $default_color;
+        
+        // Prüfe, ob für diesen Eintrag die globale Farbe verwendet werden soll
+        $use_global_color = get_post_meta(get_the_ID(), 'nt_use_global_color', true);
+        
+        // Wenn nicht definiert, standardmäßig globale Farbe verwenden
+        if ($use_global_color === '') {
+            $use_global_color = 'yes';
+        }
+        
+        if ($use_global_color === 'yes') {
+            // Globale Farbe verwenden
+            $color = $default_color;
+        } else {
+            // Individuelle Farbe verwenden
+            $custom_color = get_post_meta(get_the_ID(), 'nt_border_color', true);
+            $color = $custom_color ? $custom_color : $default_color;
+        }
         ?>
         <div class="news-ticker-entry">
             <div class="news-ticker-dot" style="--dot-color: <?php echo esc_attr($color); ?>; --dot-color-pulse: <?php echo nt_hex_to_rgba($color, 0.4); ?>; --dot-color-pulse-transparent: <?php echo nt_hex_to_rgba($color, 0); ?>; background-color: <?php echo esc_attr($color); ?>;"></div>
