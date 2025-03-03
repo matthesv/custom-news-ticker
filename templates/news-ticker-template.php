@@ -8,9 +8,17 @@
 if (!defined('ABSPATH')) exit;
 
 $default_color = nt_get_border_color();
+
+// Berechne den Zeitstempel des letzten Beitrags
+$last_timestamp = 0;
+if (!empty($query->posts)) {
+    $last_post = end($query->posts);
+    $use_update_date = get_post_meta($last_post->ID, 'nt_use_updated_date', true) === 'yes';
+    $last_timestamp = $use_update_date ? strtotime($last_post->post_modified) : strtotime($last_post->post_date);
+}
 ?>
 <?php if ($query->have_posts()) : ?>
-<div class="news-ticker-container" data-category="<?php echo esc_attr($atts['category']); ?>" data-posts-per-page="<?php echo intval($query->query_vars['posts_per_page']); ?>" data-offset="<?php echo count($query->posts); ?>" style="border-left: 3px solid <?php echo esc_attr($default_color); ?>;">
+<div class="news-ticker-container" data-category="<?php echo esc_attr($atts['category']); ?>" data-posts-per-page="<?php echo intval($query->query_vars['posts_per_page']); ?>" data-last-timestamp="<?php echo esc_attr($last_timestamp); ?>" style="border-left: 3px solid <?php echo esc_attr($default_color); ?>;">
     <?php while ($query->have_posts()) : $query->the_post(); ?>
         <?php 
         $use_update_date = get_post_meta(get_the_ID(), 'nt_use_updated_date', true) === 'yes';
@@ -18,11 +26,9 @@ $default_color = nt_get_border_color();
         $time_diff = human_time_diff($date_timestamp, current_time('timestamp'));
         $language = get_option('news_ticker_language', '');
         $translated_time = nt_translate_time($time_diff, $language);
-        // Berechne das vollständige Datum
         $full_date = date_i18n('d.m.Y, H:i \U\h\r', $date_timestamp);
         $image = get_the_post_thumbnail(get_the_ID(), 'thumbnail'); 
         
-        // Prüfe, ob für diesen Eintrag die globale Farbe verwendet werden soll
         $use_global_color = get_post_meta(get_the_ID(), 'nt_use_global_color', true);
         if ($use_global_color === '') {
             $use_global_color = 'yes';
@@ -35,17 +41,15 @@ $default_color = nt_get_border_color();
             $color = $custom_color ? $custom_color : $default_color;
         }
         
-        // Prüfe, ob der Hintergrund eingefärbt werden soll
         $background = get_post_meta(get_the_ID(), 'nt_background_color', true) === 'yes';
         $bg_style = $background ? 'background-color: ' . nt_hex_to_rgba($color, 0.7) . ';' : '';
         ?>
-        <div class="news-ticker-entry" data-news-id="<?php the_ID(); ?>" style="<?php echo esc_attr($bg_style); ?>">
+        <div class="news-ticker-entry" data-news-id="<?php the_ID(); ?>" data-timestamp="<?php echo esc_attr($date_timestamp); ?>" style="<?php echo esc_attr($bg_style); ?>">
             <div class="news-ticker-dot" style="--dot-color: <?php echo esc_attr($color); ?>; --dot-color-pulse: <?php echo nt_hex_to_rgba($color, 0.4); ?>; --dot-color-pulse-transparent: <?php echo nt_hex_to_rgba($color, 0); ?>; background-color: <?php echo esc_attr($color); ?>;"></div>
             <div class="news-ticker-content">
                 <?php echo $image; ?>
                 <h4><?php the_title(); ?></h4>
                 <p><?php the_content(); ?></p>
-                <!-- Das data-full-date Attribut enthält das vollständige Datum -->
                 <span class="news-ticker-time" data-full-date="<?php echo esc_attr($full_date); ?>"><?php echo esc_html($translated_time); ?></span>
             </div>
         </div>

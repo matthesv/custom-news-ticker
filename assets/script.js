@@ -29,7 +29,7 @@ jQuery(document).ready(function ($) {
         var rgbaTransparent = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0)";
         var dotStyle = "background-color:" + dotColor + "; --dot-color:" + dotColor + "; --dot-color-pulse:" + rgbaPulse + "; --dot-color-pulse-transparent:" + rgbaTransparent + ";";
         
-        var html = '<div class="news-ticker-entry" data-news-id="'+news.ID+'">';
+        var html = '<div class="news-ticker-entry" data-news-id="'+news.ID+'" data-timestamp="'+news.timestamp+'">';
         html += '<div class="news-ticker-dot" style="' + dotStyle + '"></div>';
         html += '<div class="news-ticker-content">';
         html += imageHTML;
@@ -49,22 +49,29 @@ jQuery(document).ready(function ($) {
         return html;
     }
     
-    // Lädt News via AJAX, unterscheidet zwischen 'refresh' und 'load_more'
-    function loadNews(mode, offset) {
+    // Lädt News via AJAX; unterscheidet zwischen 'refresh' und 'load_more'
+    function loadNews(mode, lastTimestamp) {
         var tickerContainer = $('.news-ticker-container');
         var category = tickerContainer.data('category') || '';
         var postsPerPage = tickerContainer.data('posts-per-page') || 5;
+        var ajaxData = {
+            action: 'fetch_news',
+            category: category,
+            posts_per_page: postsPerPage,
+            mode: mode,
+            nonce: newsTickerAjax.nonce
+        };
+
+        if(mode === 'load_more') {
+            ajaxData.last_timestamp = lastTimestamp;
+        } else {
+            ajaxData.offset = 0; // für den Refresh-Modus
+        }
+
         $.ajax({
             url: newsTickerAjax.ajax_url,
             type: 'POST',
-            data: {
-                action: 'fetch_news',
-                category: category,
-                posts_per_page: postsPerPage,
-                offset: offset,
-                mode: mode,
-                nonce: newsTickerAjax.nonce
-            },
+            data: ajaxData,
             beforeSend: function() {
                 showLoading(tickerContainer);
             },
@@ -72,27 +79,22 @@ jQuery(document).ready(function ($) {
                 tickerContainer.find('.news-ticker-loading').remove();
                 if(response && response.news_items) {
                     if(mode === 'refresh') {
-                        // Bei Auto-Refresh: Nur neue Einträge hinzufügen, ohne vorhandene zu überschreiben
+                        // Beim Auto-Refresh: Neue Beiträge vorne einfügen
                         $.each(response.news_items, function(index, news) {
                             if (tickerContainer.find('.news-ticker-entry[data-news-id="'+news.ID+'"]').length === 0) {
                                 tickerContainer.prepend(renderNewsItem(news));
                             }
                         });
                     } else if(mode === 'load_more') {
-                        // Beim "Mehr Laden" anhängen
+                        // Beim "Mehr Laden" anhängen und letzten Zeitstempel aktualisieren
                         tickerContainer.append(renderNewsItems(response.news_items));
+                        tickerContainer.data('last-timestamp', response.new_last_timestamp);
                     }
-                    tickerContainer.data('offset', response.new_offset);
-                    
-                    // Zeige oder verstecke den "Mehr Laden"-Button
+                    // "Mehr Laden"-Button anzeigen oder verbergen
                     if(response.has_more) {
                         $('#news-ticker-load-more').show();
                     } else {
                         $('#news-ticker-load-more').hide();
-                    }
-                } else {
-                    if(mode === 'refresh') {
-                        // Keine neuen News – nichts tun
                     }
                 }
             },
@@ -104,7 +106,7 @@ jQuery(document).ready(function ($) {
         });
     }
     
-    // Initialer Ladevorgang
+    // Initialer Ladevorgang (Refresh)
     loadNews('refresh', 0);
     
     // Auto-Refresh alle 60 Sekunden
@@ -112,14 +114,15 @@ jQuery(document).ready(function ($) {
         loadNews('refresh', 0);
     }, 60000);
     
-    // "Mehr Laden" Button
+    // "Mehr Laden"-Button: Nutzt den letzten Zeitstempel aus dem Container
     $(document).on('click', '#news-ticker-load-more', function(e) {
         e.preventDefault();
-        var currentOffset = $('.news-ticker-container').data('offset') || 0;
-        loadNews('load_more', currentOffset);
+        var tickerContainer = $('.news-ticker-container');
+        var lastTimestamp = tickerContainer.data('last-timestamp') || 0;
+        loadNews('load_more', lastTimestamp);
     });
     
-    // Tooltip-Logik: Bei Hover über die Zeitangabe wird das vollständige Datum angezeigt
+    // Tooltip-Logik
     $(document).on('mouseenter', '.news-ticker-time', function() {
         var fullDate = $(this).data('full-date');
         if (fullDate) {
