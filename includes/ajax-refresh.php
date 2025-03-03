@@ -5,17 +5,21 @@ require_once NEWS_TICKER_PATH . 'includes/news-functions.php';
 
 /**
  * Ermittelt den effektiven Zeitstempel eines Posts.
+ * Nutzt get_post_time() bzw. get_post_modified_time(), um auch bei älteren Beiträgen korrekte Werte zu erhalten.
  */
 function nt_get_effective_timestamp($post) {
     $use_updated = get_post_meta($post->ID, 'nt_use_updated_date', true) === 'yes';
-    $timestamp = $use_updated ? strtotime($post->post_modified) : strtotime($post->post_date);
-    return $timestamp ? $timestamp : 0;
+    if ($use_updated) {
+        return get_post_modified_time('U', true, $post);
+    } else {
+        return get_post_time('U', true, $post);
+    }
 }
 
 /**
  * Holt die neuesten News-Posts und gibt sie als JSON zurück.
  * Unterstützt zwei Modi:
- * - 'refresh': Lädt die neuesten Beiträge (offset = 0) und fügt neue Beiträge vorne ein.
+ * - 'refresh': Lädt die neuesten Beiträge und fügt neue Beiträge vorne ein.
  * - 'load_more': Lädt ältere Beiträge basierend auf dem letzten geladenen effektiven Zeitstempel.
  */
 function fetch_latest_news() {
@@ -52,7 +56,7 @@ function fetch_latest_news() {
 
     $query = nt_get_news_query($args);
 
-    // Für load_more: zuerst nach effektivem Zeitstempel (DESC) sortieren …
+    // Für load_more: sortiere nach effektivem Zeitstempel und filtere Beiträge, die älter als der übergebene Zeitstempel sind
     if ($mode === 'load_more' && isset($_POST['last_timestamp'])) {
         $last_timestamp = intval($_POST['last_timestamp']);
         if (!empty($query->posts)) {
@@ -62,7 +66,6 @@ function fetch_latest_news() {
                 return $b_time - $a_time;
             });
         }
-        // … und dann nur Beiträge auswählen, die älter sind als der übergebene Zeitstempel
         $filtered_posts = array_filter($query->posts, function($post) use ($last_timestamp) {
             return nt_get_effective_timestamp($post) < $last_timestamp;
         });

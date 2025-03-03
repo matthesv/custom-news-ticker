@@ -48,13 +48,13 @@ function nt_get_news_query($args = array()) {
 function nt_get_news_items($query) {
     $news_items = [];
     
-    // Sortiere die Posts manuell basierend auf dem gewählten Datum (Aktualisierungsdatum falls aktiviert, sonst Veröffentlichungsdatum)
+    // Sortiere die Posts manuell basierend auf dem gewählten Datum
     if (!empty($query->posts)) {
         usort($query->posts, function($a, $b) {
             $a_use_updated = get_post_meta($a->ID, 'nt_use_updated_date', true) === 'yes';
-            $a_date = $a_use_updated ? strtotime($a->post_modified) : strtotime($a->post_date);
+            $a_date = $a_use_updated ? get_post_modified_time('U', true, $a) : get_post_time('U', true, $a);
             $b_use_updated = get_post_meta($b->ID, 'nt_use_updated_date', true) === 'yes';
-            $b_date = $b_use_updated ? strtotime($b->post_modified) : strtotime($b->post_date);
+            $b_date = $b_use_updated ? get_post_modified_time('U', true, $b) : get_post_time('U', true, $b);
             return $b_date - $a_date;
         });
     }
@@ -67,18 +67,13 @@ function nt_get_news_items($query) {
             $query->the_post();
             $image_url = get_the_post_thumbnail_url(get_the_ID(), 'thumbnail');
             
-            // Verwende das Aktualisierungsdatum, falls aktiviert, ansonsten das Veröffentlichungsdatum
             $use_update_date = get_post_meta(get_the_ID(), 'nt_use_updated_date', true) === 'yes';
-            $date_timestamp = $use_update_date ? get_the_modified_time('U') : get_the_time('U');
+            $date_timestamp = $use_update_date ? get_post_modified_time('U', true, get_the_ID()) : get_post_time('U', true, get_the_ID());
             $time_diff = human_time_diff($date_timestamp, current_time('timestamp'));
             
-            // Übersetze die Zeitangabe
             $translated_time = nt_translate_time($time_diff, $language);
-            
-            // Berechne das vollständige Datum im gewünschten Format
             $full_date = date_i18n('d.m.Y, H:i \U\h\r', $date_timestamp);
             
-            // Prüfe, ob für diesen Eintrag die globale Farbe verwendet werden soll
             $use_global_color = get_post_meta(get_the_ID(), 'nt_use_global_color', true);
             if ($use_global_color === '') {
                 $use_global_color = 'yes';
