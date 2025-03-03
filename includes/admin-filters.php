@@ -23,7 +23,7 @@ function nt_add_taxonomy_filters() {
             if (!empty($terms) && !is_wp_error($terms)) {
                 foreach ($terms as $term) {
                     ?>
-                    <option value="<?php echo esc_attr($term->term_id); ?>" <?php selected($current_value, $term->term_id); ?>>
+                    <option value="<?php echo esc_attr($term->slug); ?>" <?php selected($current_value, $term->slug); ?>>
                         <?php echo esc_html($term->name); ?>
                     </option>
                     <?php
@@ -58,8 +58,8 @@ function nt_filter_posts_by_taxonomy($query) {
             $query->set('tax_query', [
                 [
                     'taxonomy' => $taxonomy,
-                    'field'    => 'term_id',
-                    'terms'    => intval($_GET[$taxonomy]),
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field($_GET[$taxonomy]),
                 ]
             ]);
         }
