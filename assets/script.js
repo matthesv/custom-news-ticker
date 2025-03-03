@@ -161,4 +161,6 @@ jQuery(document).ready(function ($) {
     
     // Aufräumen bei Seitenverlassen
     $(window).on('beforeunload', function() {
-        clearInt
+        clearInterval(refreshInterval);
+    });
+});
