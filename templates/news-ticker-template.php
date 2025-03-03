@@ -113,6 +113,39 @@ if (!empty($query->posts)) {
 
                 <!-- Permalink für Suchmaschinen und Nutzer ohne JavaScript -->
                 <a class="news-ticker-permalink" href="<?php the_permalink(); ?>" aria-label="Mehr lesen zu <?php the_title_attribute(); ?>">Mehr lesen</a>
+
+                <?php
+                // Quellen ausgeben, falls vorhanden
+                $sources = get_post_meta(get_the_ID(), 'nt_sources', true);
+                if (!empty($sources)) :
+                    // Links zerlegen
+                    $links = array_map('trim', explode(',', $sources));
+                    ?>
+                    <div class="news-ticker-sources" style="margin-top: 10px;">
+                        <strong><?php _e('Verwendete Quellen', 'news-ticker'); ?>:</strong>
+                        <ul style="list-style: disc; margin-left: 20px;">
+                            <?php foreach ($links as $link) : ?>
+                                <li>
+                                    <?php
+                                    // Wenn Link eine URL ist, klickbar ausgeben; sonst nur Text
+                                    $maybe_url = trim($link);
+                                    if (filter_var($maybe_url, FILTER_VALIDATE_URL)) {
+                                        // Korrekte URL
+                                        $escaped_url = esc_url($maybe_url);
+                                        echo '<a href="' . $escaped_url . '" target="_blank" rel="noopener noreferrer">'
+                                             . esc_html($maybe_url) .
+                                             '</a>';
+                                    } else {
+                                        // Kein valider Link, einfach als Text ausgeben
+                                        echo esc_html($link);
+                                    }
+                                    ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+
             </div>
         </article>
     <?php endwhile; ?>

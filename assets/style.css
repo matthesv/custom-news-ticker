@@ -180,3 +180,57 @@
 .js-enabled .news-ticker-permalink {
     display: none;
 }
+
+/* Container für die Quellen-Box */
+.news-ticker-sources {
+    background-color: #f8f9fc;      /* Heller Hintergrund */
+    border: 1px solid #e1e4e8;      /* Dezente Umrandung */
+    border-radius: 6px;            /* Leicht abgerundete Ecken */
+    padding: 16px;
+    margin: 20px 0;                /* Abstand nach oben/unten */
+  }
+  
+  /* Überschrift "Verwendete Quellen" */
+  .news-ticker-sources strong {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 1.1em;
+  }
+  
+  /* Quellenliste ohne Standard-Punkte */
+  .news-ticker-sources ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Einzelne Quellen-Einträge */
+  .news-ticker-sources ul li {
+    position: relative;      /* Für das Pfeil-Symbol */
+    margin-bottom: 8px;      /* Abstand zwischen Einträgen */
+    padding-left: 24px;      /* Platz für das Symbol */
+    line-height: 1.4;
+  }
+  
+  /* Pfeil-Symbol (oder anderes Icon) links vom Eintrag */
+  .news-ticker-sources ul li::before {
+    content: "\00BB";        /* » Symbol, kann angepasst werden */
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #FF4500;          /* Farbe des Symbols, z.B. Orange */
+    font-size: 1.2em;
+  }
+  
+  /* Verlinkte Quellen */
+  .news-ticker-sources a {
+    color: #0073aa;               /* Linkfarbe */
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .news-ticker-sources a:hover {
+    color: #005177;               /* Dunklere Linkfarbe beim Hover */
+    text-decoration: underline;
+  }
