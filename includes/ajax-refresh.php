@@ -18,7 +18,7 @@ function fetch_latest_news() {
     $category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : '';
     $offset = isset($_POST['offset']) ? intval($_POST['offset']) : 0;
     $posts_per_page = isset($_POST['posts_per_page']) ? intval($_POST['posts_per_page']) : intval(get_option('news_ticker_entries_count', 5));
-    $mode = isset($_POST['mode']) ? sanitize_text_field($_POST['mode']) : 'refresh'; // 'refresh' oder 'load_more'
+    $mode = isset($_POST['mode']) ? sanitize_text_field($_POST['mode']) : 'refresh';
 
     $args = [
         'post_type'      => 'news_ticker',
@@ -38,8 +38,7 @@ function fetch_latest_news() {
     }
 
     if ($mode === 'load_more') {
-        // Im "load_more"-Modus werden bereits geladene Beiträge anhand ihrer IDs ausgeschlossen.
-        // Daher entfernen wir den Offset, um zu verhindern, dass Beiträge übersprungen werden.
+        // IDs der bereits geladenen Beiträge ausschließen
         if (isset($_POST['exclude_ids']) && is_array($_POST['exclude_ids'])) {
             $exclude_ids = array_map('intval', $_POST['exclude_ids']);
             $args['post__not_in'] = $exclude_ids;
@@ -47,9 +46,19 @@ function fetch_latest_news() {
             $exclude_ids = [];
         }
         $previous_count = count($exclude_ids);
+
+        // Gesamtzahl ermitteln: separate Query ohne Ausschlüsse
+        $count_args = $args;
+        if (isset($count_args['post__not_in'])) {
+            unset($count_args['post__not_in']);
+        }
+        $count_query = new WP_Query($count_args);
+        $total_posts = $count_query->found_posts;
+        wp_reset_postdata();
     } else {
         $args['offset'] = $offset;
         $previous_count = $offset;
+        // Bei Refresh-Modus wird die Gesamtzahl aus der Query ermittelt
     }
 
     $query = nt_get_news_query($args);
@@ -57,7 +66,6 @@ function fetch_latest_news() {
 
     if ($mode === 'load_more') {
         $new_offset = $previous_count + count($news_items);
-        $total_posts = $query->found_posts; // Anzahl der Beiträge, die der Query (ohne die ausgeschlossenen) entsprechen
     } else {
         $new_offset = $offset + count($news_items);
         $total_posts = $query->found_posts;

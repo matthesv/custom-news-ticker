@@ -92,14 +92,13 @@ jQuery(document).ready(function ($) {
                                 tickerContainer.prepend(renderNewsItem(news));
                             }
                         });
-                        // Statt den Offset zu überschreiben, erhöhen wir ihn um die Anzahl der neuen Beiträge
-                        var currentOffset = tickerContainer.data('offset') || 0;
-                        tickerContainer.data('offset', currentOffset + response.news_items.length);
                     } else if(mode === 'load_more') {
                         // Beim "Mehr Laden" anhängen
                         tickerContainer.append(renderNewsItems(response.news_items));
-                        tickerContainer.data('offset', response.new_offset);
                     }
+                    // Aktualisiere den Offset sowohl intern als auch im DOM-Attribut
+                    tickerContainer.data('offset', response.new_offset);
+                    tickerContainer.attr('data-offset', response.new_offset);
                     
                     // Zeige oder verstecke den "Mehr Laden"-Button
                     if(response.has_more) {
