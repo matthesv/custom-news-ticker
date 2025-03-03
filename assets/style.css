@@ -32,7 +32,7 @@
 
 /* Fokus-Stil für Tastaturnavigation */
 .news-ticker-entry:focus {
-    outline: 2px solid #FF4500;
+    outline: 1px solid #FF4500;
     outline-offset: 2px;
 }
 
