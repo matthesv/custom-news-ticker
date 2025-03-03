@@ -5,14 +5,14 @@ require_once NEWS_TICKER_PATH . 'includes/news-functions.php';
 
 /**
  * Ermittelt den effektiven Zeitstempel eines Posts.
- * Nutzt get_post_time() bzw. get_post_modified_time(), um auch bei älteren Beiträgen korrekte Werte zu erhalten.
+ * Hier nutzen wir direkt die Post-Felder und wandeln sie mittels strtotime() um.
  */
 function nt_get_effective_timestamp($post) {
     $use_updated = get_post_meta($post->ID, 'nt_use_updated_date', true) === 'yes';
     if ($use_updated) {
-        return get_post_modified_time('U', true, $post);
+        return strtotime($post->post_modified);
     } else {
-        return get_post_time('U', true, $post);
+        return strtotime($post->post_date);
     }
 }
 
@@ -56,7 +56,7 @@ function fetch_latest_news() {
 
     $query = nt_get_news_query($args);
 
-    // Für load_more: sortiere nach effektivem Zeitstempel und filtere Beiträge, die älter als der übergebene Zeitstempel sind
+    // Für load_more: Sortieren nach effektivem Zeitstempel und Filtern der Beiträge, die älter als der übergebene Zeitstempel sind.
     if ($mode === 'load_more' && isset($_POST['last_timestamp'])) {
         $last_timestamp = intval($_POST['last_timestamp']);
         if (!empty($query->posts)) {

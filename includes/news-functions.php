@@ -48,18 +48,18 @@ function nt_get_news_query($args = array()) {
 function nt_get_news_items($query) {
     $news_items = [];
     
-    // Sortiere die Posts manuell basierend auf dem gewählten Datum
+    // Sortiere die Posts manuell basierend auf dem effektiven Datum
     if (!empty($query->posts)) {
         usort($query->posts, function($a, $b) {
             $a_use_updated = get_post_meta($a->ID, 'nt_use_updated_date', true) === 'yes';
-            $a_date = $a_use_updated ? get_post_modified_time('U', true, $a) : get_post_time('U', true, $a);
+            $a_date = $a_use_updated ? strtotime($a->post_modified) : strtotime($a->post_date);
             $b_use_updated = get_post_meta($b->ID, 'nt_use_updated_date', true) === 'yes';
-            $b_date = $b_use_updated ? get_post_modified_time('U', true, $b) : get_post_time('U', true, $b);
+            $b_date = $b_use_updated ? strtotime($b->post_modified) : strtotime($b->post_date);
             return $b_date - $a_date;
         });
     }
     
-    // Hole die gewählte Sprache aus den Einstellungen
+    // Hole die eingestellte Sprache
     $language = get_option('news_ticker_language', '');
     
     if ($query->have_posts()) {
@@ -68,7 +68,8 @@ function nt_get_news_items($query) {
             $image_url = get_the_post_thumbnail_url(get_the_ID(), 'thumbnail');
             
             $use_update_date = get_post_meta(get_the_ID(), 'nt_use_updated_date', true) === 'yes';
-            $date_timestamp = $use_update_date ? get_post_modified_time('U', true, get_the_ID()) : get_post_time('U', true, get_the_ID());
+            $post_obj = get_post(get_the_ID());
+            $date_timestamp = $use_update_date ? strtotime($post_obj->post_modified) : strtotime($post_obj->post_date);
             $time_diff = human_time_diff($date_timestamp, current_time('timestamp'));
             
             $translated_time = nt_translate_time($time_diff, $language);
@@ -94,7 +95,7 @@ function nt_get_news_items($query) {
                 'full_date'    => $full_date,
                 'image'        => $image_url ? $image_url : '',
                 'border_color' => $border_color,
-                'timestamp'    => $date_timestamp, // Neuer Schlüssel für den effektiven Zeitstempel
+                'timestamp'    => $date_timestamp, // Effektiver Zeitstempel
             ];
         }
         wp_reset_postdata();
@@ -116,7 +117,6 @@ function nt_format_time($timestamp) {
 
 /**
  * Bestimmt die Standard-Randfarbe des News Tickers.
- * Prüft, ob als Farbquelle "primary" oder "secondary" aus dem Theme gewählt wurde.
  *
  * @return string Hex-Farbcode
  */
