@@ -181,6 +181,7 @@
     display: none;
 }
 
+/* Basis-Styles für die Quellenbox */
 .news-ticker-sources {
     background-color: #f8f9fc;
     border: 1px solid #e1e4e8;
@@ -196,22 +197,30 @@
     font-size: 1.1em;
   }
   
-  /* WICHTIG: Standard-Aufzählungszeichen entfernen */
+  /* Bullet und alle möglichen Listen-Markierungen entfernen */
   .news-ticker-sources ul {
-    list-style: none; /* oder list-style: none !important; falls nötig */
-    margin: 0;
-    padding: 0;
+    list-style: none !important;
+    list-style-type: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   
-  /* Abstand und Positionierung für das Pfeil-Symbol */
+  /* Für Sicherheit auch beim <li> selbst */
   .news-ticker-sources ul li {
+    list-style: none !important;
+    list-style-type: none !important;
     position: relative;
     margin-bottom: 8px;
-    padding-left: 24px; /* Platz für das Symbol links */
+    padding-left: 24px; /* Platz für das Pfeil-Symbol links */
     line-height: 1.4;
   }
   
-  /* Pfeil-Symbol anstelle des Standard-Bullets */
+  /* Entfernt explizit das ::marker-Pseudoelement in modernen Browsern */
+  .news-ticker-sources ul li::marker {
+    content: "" !important;
+  }
+  
+  /* Stattdessen Pfeil-Symbol einsetzen */
   .news-ticker-sources ul li::before {
     content: "\00BB";   /* » Symbol */
     position: absolute;
@@ -223,12 +232,11 @@
   
   /* Verlinkte Quellen */
   .news-ticker-sources a {
-    color: #0073aa;
     text-decoration: none;
     transition: color 0.2s ease;
   }
   
   .news-ticker-sources a:hover {
-    color: #005177;
     text-decoration: underline;
   }
+  
