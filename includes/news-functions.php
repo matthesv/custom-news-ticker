@@ -96,9 +96,10 @@ function nt_get_news_items($query) {
                 'title'        => get_the_title(),
                 'content'      => apply_filters('the_content', get_the_content()),
                 'time'         => $translated_time,
-                'full_date'    => $full_date, // Neues Feld für das vollständige Datum
+                'full_date'    => $full_date,
                 'image'        => $image_url ? $image_url : '',
                 'border_color' => $border_color,
+                'timestamp'    => $date_timestamp, // Neuer Schlüssel für den effektiven Zeitstempel
             ];
         }
         wp_reset_postdata();

@@ -8,7 +8,8 @@ require_once NEWS_TICKER_PATH . 'includes/news-functions.php';
  */
 function nt_get_effective_timestamp($post) {
     $use_updated = get_post_meta($post->ID, 'nt_use_updated_date', true) === 'yes';
-    return $use_updated ? strtotime($post->post_modified) : strtotime($post->post_date);
+    $timestamp = $use_updated ? strtotime($post->post_modified) : strtotime($post->post_date);
+    return $timestamp ? $timestamp : 0;
 }
 
 /**
@@ -51,8 +52,17 @@ function fetch_latest_news() {
 
     $query = nt_get_news_query($args);
 
+    // Für load_more: zuerst nach effektivem Zeitstempel (DESC) sortieren …
     if ($mode === 'load_more' && isset($_POST['last_timestamp'])) {
         $last_timestamp = intval($_POST['last_timestamp']);
+        if (!empty($query->posts)) {
+            usort($query->posts, function($a, $b) {
+                $a_time = nt_get_effective_timestamp($a);
+                $b_time = nt_get_effective_timestamp($b);
+                return $b_time - $a_time;
+            });
+        }
+        // … und dann nur Beiträge auswählen, die älter sind als der übergebene Zeitstempel
         $filtered_posts = array_filter($query->posts, function($post) use ($last_timestamp) {
             return nt_get_effective_timestamp($post) < $last_timestamp;
         });
@@ -63,11 +73,13 @@ function fetch_latest_news() {
 
     $news_items = nt_get_news_items($query);
 
-    // Ermitteln des neuen letzten Zeitstempels für load_more
+    // Ermitteln des neuen letzten Zeitstempels (Cursor) anhand der sortierten Ergebnisse
     $new_last_timestamp = 0;
-    if ($mode === 'load_more' && !empty($query->posts)) {
-        $last_post = end($query->posts);
-        $new_last_timestamp = nt_get_effective_timestamp($last_post);
+    if ($mode === 'load_more' && !empty($news_items)) {
+        $last_item = end($news_items);
+        if ($last_item && isset($last_item['timestamp'])) {
+            $new_last_timestamp = $last_item['timestamp'];
+        }
     }
 
     // Bestimmen, ob noch weitere Beiträge vorhanden sind
@@ -88,4 +100,5 @@ function fetch_latest_news() {
 }
 
 add_action('wp_ajax_fetch_news', 'fetch_latest_news');
-add_action('wp_ajax_nopriv_fetch_news', 'fet
+add_action('wp_ajax_nopriv_fetch_news', 'fetch_latest_news');
+?>

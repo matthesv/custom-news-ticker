@@ -9,7 +9,18 @@ if (!defined('ABSPATH')) exit;
 
 $default_color = nt_get_border_color();
 
-// Berechne den Zeitstempel des letzten Beitrags
+// Sortiere die Posts im Query manuell nach effektivem Zeitstempel (DESC)
+if (!empty($query->posts)) {
+    usort($query->posts, function($a, $b) {
+        $a_use_updated = get_post_meta($a->ID, 'nt_use_updated_date', true) === 'yes';
+        $a_date = $a_use_updated ? strtotime($a->post_modified) : strtotime($a->post_date);
+        $b_use_updated = get_post_meta($b->ID, 'nt_use_updated_date', true) === 'yes';
+        $b_date = $b_use_updated ? strtotime($b->post_modified) : strtotime($b->post_date);
+        return $b_date - $a_date;
+    });
+}
+
+// Berechne den effektiven Zeitstempel des letzten (ältesten) Beitrags
 $last_timestamp = 0;
 if (!empty($query->posts)) {
     $last_post = end($query->posts);
