@@ -1,3 +1,6 @@
+// assets/script.js – Aktualisiert: Fügt beim Laden die Klasse "js-enabled" hinzu
+document.documentElement.classList.add('js-enabled');
+
 jQuery(document).ready(function ($) {
     // Hilfsfunktion: Konvertiert Hex-Farbe in RGB
     function hexToRgb(hex) {
@@ -22,21 +25,23 @@ jQuery(document).ready(function ($) {
     
     // Rendert einen einzelnen News-Eintrag
     function renderNewsItem(news) {
-        var imageHTML = news.image ? '<img src="'+news.image+'" alt="News Image">' : '';
+        var imageHTML = news.image ? '<img src="'+news.image+'" alt="News Image" itemprop="image">' : '';
         var dotColor = news.border_color ? news.border_color : newsTickerAjax.border_color;
         var rgb = hexToRgb(dotColor);
         var rgbaPulse = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0.4)";
         var rgbaTransparent = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0)";
         var dotStyle = "background-color:" + dotColor + "; --dot-color:" + dotColor + "; --dot-color-pulse:" + rgbaPulse + "; --dot-color-pulse-transparent:" + rgbaTransparent + ";";
         
-        var html = '<div class="news-ticker-entry" data-news-id="'+news.ID+'">';
+        var html = '<article class="news-ticker-entry" data-news-id="'+news.ID+'" itemscope itemtype="https://schema.org/NewsArticle">';
         html += '<div class="news-ticker-dot" style="' + dotStyle + '"></div>';
         html += '<div class="news-ticker-content">';
         html += imageHTML;
-        html += '<h4>'+news.title+'</h4>';
-        html += '<p>'+news.content+'</p>';
-        html += '<span class="news-ticker-time" data-full-date="'+news.full_date+'">'+news.time+'</span>';
-        html += '</div></div>';
+        html += '<header><h2 itemprop="headline">'+news.title+'</h2></header>';
+        html += '<div itemprop="articleBody">'+news.content+'</div>';
+        html += '<time class="news-ticker-time" datetime="'+news.full_date+'" itemprop="datePublished" data-full-date="'+news.full_date+'">'+news.time+'</time>';
+        // Permalink-Link – über CSS bei JS-Nutzung ausgeblendet
+        html += '<a class="news-ticker-permalink" href="'+news.permalink+'">Mehr lesen</a>';
+        html += '</div></article>';
         return html;
     }
     

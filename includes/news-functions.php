@@ -96,6 +96,7 @@ function nt_get_news_items($query) {
                 'image'        => $image_url ? $image_url : '',
                 'border_color' => $border_color,
                 'timestamp'    => $date_timestamp, // Effektiver Zeitstempel
+                'permalink'    => get_permalink(get_the_ID())
             ];
         }
         wp_reset_postdata();
