@@ -181,16 +181,14 @@
     display: none;
 }
 
-/* Container für die Quellen-Box */
 .news-ticker-sources {
-    background-color: #f8f9fc;      /* Heller Hintergrund */
-    border: 1px solid #e1e4e8;      /* Dezente Umrandung */
-    border-radius: 6px;            /* Leicht abgerundete Ecken */
+    background-color: #f8f9fc;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
     padding: 16px;
-    margin: 20px 0;                /* Abstand nach oben/unten */
+    margin: 20px 0;
   }
   
-  /* Überschrift "Verwendete Quellen" */
   .news-ticker-sources strong {
     display: block;
     margin-bottom: 10px;
@@ -198,39 +196,39 @@
     font-size: 1.1em;
   }
   
-  /* Quellenliste ohne Standard-Punkte */
+  /* WICHTIG: Standard-Aufzählungszeichen entfernen */
   .news-ticker-sources ul {
-    list-style: none;
+    list-style: none; /* oder list-style: none !important; falls nötig */
     margin: 0;
     padding: 0;
   }
   
-  /* Einzelne Quellen-Einträge */
+  /* Abstand und Positionierung für das Pfeil-Symbol */
   .news-ticker-sources ul li {
-    position: relative;      /* Für das Pfeil-Symbol */
-    margin-bottom: 8px;      /* Abstand zwischen Einträgen */
-    padding-left: 24px;      /* Platz für das Symbol */
+    position: relative;
+    margin-bottom: 8px;
+    padding-left: 24px; /* Platz für das Symbol links */
     line-height: 1.4;
   }
   
-  /* Pfeil-Symbol (oder anderes Icon) links vom Eintrag */
+  /* Pfeil-Symbol anstelle des Standard-Bullets */
   .news-ticker-sources ul li::before {
-    content: "\00BB";        /* » Symbol, kann angepasst werden */
+    content: "\00BB";   /* » Symbol */
     position: absolute;
     left: 0;
     top: 0;
-    color: #FF4500;          /* Farbe des Symbols, z.B. Orange */
+    color: #FF4500;     /* Farbe des Symbols anpassen */
     font-size: 1.2em;
   }
   
   /* Verlinkte Quellen */
   .news-ticker-sources a {
-    color: #0073aa;               /* Linkfarbe */
+    color: #0073aa;
     text-decoration: none;
     transition: color 0.2s ease;
   }
   
   .news-ticker-sources a:hover {
-    color: #005177;               /* Dunklere Linkfarbe beim Hover */
+    color: #005177;
     text-decoration: underline;
   }
