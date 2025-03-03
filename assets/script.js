@@ -20,27 +20,31 @@ jQuery(document).ready(function ($) {
         container.append('<div class="news-ticker-loading">Lade Nachrichten...</div>');
     }
     
-    // Rendert News-Einträge aus dem Array der News
+    // Rendert einen einzelnen News-Eintrag
+    function renderNewsItem(news) {
+        var imageHTML = news.image ? '<img src="'+news.image+'" alt="News Image">' : '';
+        var dotColor = news.border_color ? news.border_color : newsTickerAjax.border_color;
+        var rgb = hexToRgb(dotColor);
+        var rgbaPulse = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0.4)";
+        var rgbaTransparent = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0)";
+        var dotStyle = "background-color:" + dotColor + "; --dot-color:" + dotColor + "; --dot-color-pulse:" + rgbaPulse + "; --dot-color-pulse-transparent:" + rgbaTransparent + ";";
+        
+        var html = '<div class="news-ticker-entry" data-news-id="'+news.ID+'">';
+        html += '<div class="news-ticker-dot" style="' + dotStyle + '"></div>';
+        html += '<div class="news-ticker-content">';
+        html += imageHTML;
+        html += '<h4>'+news.title+'</h4>';
+        html += '<p>'+news.content+'</p>';
+        html += '<span class="news-ticker-time" data-full-date="'+news.full_date+'">'+news.time+'</span>';
+        html += '</div></div>';
+        return html;
+    }
+    
+    // Rendert mehrere News-Einträge
     function renderNewsItems(newsItems) {
         var html = '';
         $.each(newsItems, function(index, news) {
-            var imageHTML = news.image ? '<img src="'+news.image+'" alt="News Image">' : '';
-            var dotColor = news.border_color ? news.border_color : newsTickerAjax.border_color;
-            var rgb = hexToRgb(dotColor);
-            var rgbaPulse = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0.4)";
-            var rgbaTransparent = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0)";
-            var dotStyle = "background-color:" + dotColor + "; --dot-color:" + dotColor + "; --dot-color-pulse:" + rgbaPulse + "; --dot-color-pulse-transparent:" + rgbaTransparent + ";";
-            
-            // Hinzufügen des data-full-date Attributes für den Tooltip
-            html += '<div class="news-ticker-entry">'+
-                        '<div class="news-ticker-dot" style="' + dotStyle + '"></div>'+
-                        '<div class="news-ticker-content">'+
-                            imageHTML+
-                            '<h4>'+news.title+'</h4>'+
-                            '<p>'+news.content+'</p>'+
-                            '<span class="news-ticker-time" data-full-date="'+news.full_date+'">'+news.time+'</span>'+
-                        '</div>'+
-                    '</div>';
+            html += renderNewsItem(news);
         });
         return html;
     }
@@ -68,14 +72,18 @@ jQuery(document).ready(function ($) {
                 tickerContainer.find('.news-ticker-loading').remove();
                 if(response && response.news_items) {
                     if(mode === 'refresh') {
-                        // Beim Refresh ersetzen wir den Inhalt
-                        tickerContainer.html(renderNewsItems(response.news_items));
-                        tickerContainer.data('offset', response.new_offset);
+                        // Bei Auto-Refresh: Nur neue Einträge hinzufügen, ohne vorhandene zu überschreiben
+                        $.each(response.news_items, function(index, news) {
+                            if (tickerContainer.find('.news-ticker-entry[data-news-id="'+news.ID+'"]').length === 0) {
+                                tickerContainer.prepend(renderNewsItem(news));
+                            }
+                        });
                     } else if(mode === 'load_more') {
-                        // Beim Load More anhängen
+                        // Beim "Mehr Laden" anhängen
                         tickerContainer.append(renderNewsItems(response.news_items));
-                        tickerContainer.data('offset', response.new_offset);
                     }
+                    tickerContainer.data('offset', response.new_offset);
+                    
                     // Zeige oder verstecke den "Mehr Laden"-Button
                     if(response.has_more) {
                         $('#news-ticker-load-more').show();
@@ -84,7 +92,7 @@ jQuery(document).ready(function ($) {
                     }
                 } else {
                     if(mode === 'refresh') {
-                        tickerContainer.html('<p>Keine News verfügbar.</p>');
+                        // Keine neuen News – nichts tun
                     }
                 }
             },

@@ -34,8 +34,12 @@ $default_color = nt_get_border_color();
             $custom_color = get_post_meta(get_the_ID(), 'nt_border_color', true);
             $color = $custom_color ? $custom_color : $default_color;
         }
+        
+        // Prüfe, ob der Hintergrund eingefärbt werden soll
+        $background = get_post_meta(get_the_ID(), 'nt_background_color', true) === 'yes';
+        $bg_style = $background ? 'background-color: ' . nt_hex_to_rgba($color, 0.7) . ';' : '';
         ?>
-        <div class="news-ticker-entry">
+        <div class="news-ticker-entry" data-news-id="<?php the_ID(); ?>" style="<?php echo esc_attr($bg_style); ?>">
             <div class="news-ticker-dot" style="--dot-color: <?php echo esc_attr($color); ?>; --dot-color-pulse: <?php echo nt_hex_to_rgba($color, 0.4); ?>; --dot-color-pulse-transparent: <?php echo nt_hex_to_rgba($color, 0); ?>; background-color: <?php echo esc_attr($color); ?>;"></div>
             <div class="news-ticker-content">
                 <?php echo $image; ?>
