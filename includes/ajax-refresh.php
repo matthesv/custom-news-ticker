@@ -25,7 +25,6 @@ function fetch_latest_news() {
         'posts_per_page' => $posts_per_page,
         'orderby'        => 'date',
         'order'          => 'DESC',
-        'offset'         => $offset,
     ];
 
     if (!empty($category)) {
@@ -39,13 +38,17 @@ function fetch_latest_news() {
     }
 
     if ($mode === 'load_more') {
-        $exclude_ids = array();
+        // Im "load_more"-Modus werden bereits geladene Beiträge anhand ihrer IDs ausgeschlossen.
+        // Daher entfernen wir den Offset, um zu verhindern, dass Beiträge übersprungen werden.
         if (isset($_POST['exclude_ids']) && is_array($_POST['exclude_ids'])) {
             $exclude_ids = array_map('intval', $_POST['exclude_ids']);
             $args['post__not_in'] = $exclude_ids;
+        } else {
+            $exclude_ids = [];
         }
         $previous_count = count($exclude_ids);
     } else {
+        $args['offset'] = $offset;
         $previous_count = $offset;
     }
 
@@ -54,8 +57,7 @@ function fetch_latest_news() {
 
     if ($mode === 'load_more') {
         $new_offset = $previous_count + count($news_items);
-        // Gesamtzahl der Beiträge insgesamt = bereits geladene + aktuell gefundene Beiträge
-        $total_posts = $query->found_posts + $previous_count;
+        $total_posts = $query->found_posts; // Anzahl der Beiträge, die der Query (ohne die ausgeschlossenen) entsprechen
     } else {
         $new_offset = $offset + count($news_items);
         $total_posts = $query->found_posts;
