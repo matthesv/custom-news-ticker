@@ -1,4 +1,3 @@
-// assets/script.js – Aktualisiert: Fügt beim Laden die Klasse "js-enabled" hinzu
 document.documentElement.classList.add('js-enabled');
 
 jQuery(document).ready(function ($) {
@@ -17,22 +16,23 @@ jQuery(document).ready(function ($) {
         return {r: r, g: g, b: b};
     }
     
-    // Loading-Indikator hinzufügen
+    // Loading-Indikator hinzufügen (mit ARIA-Alert für Screenreader)
     function showLoading(container) {
         container.find('.news-ticker-loading').remove();
-        container.append('<div class="news-ticker-loading">Lade Nachrichten...</div>');
+        container.append('<div class="news-ticker-loading" role="alert">Lade Nachrichten...</div>');
     }
     
     // Rendert einen einzelnen News-Eintrag
     function renderNewsItem(news) {
-        var imageHTML = news.image ? '<img src="'+news.image+'" alt="News Image" itemprop="image">' : '';
+        // Alt-Attribut wird nun aus dem Titel generiert
+        var imageHTML = news.image ? '<img src="'+news.image+'" alt="'+news.title+'" itemprop="image">' : '';
         var dotColor = news.border_color ? news.border_color : newsTickerAjax.border_color;
         var rgb = hexToRgb(dotColor);
         var rgbaPulse = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0.4)";
         var rgbaTransparent = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0)";
         var dotStyle = "background-color:" + dotColor + "; --dot-color:" + dotColor + "; --dot-color-pulse:" + rgbaPulse + "; --dot-color-pulse-transparent:" + rgbaTransparent + ";";
         
-        var html = '<article class="news-ticker-entry" data-news-id="'+news.ID+'" itemscope itemtype="https://schema.org/NewsArticle">';
+        var html = '<article class="news-ticker-entry" data-news-id="'+news.ID+'" tabindex="0" role="listitem" itemscope itemtype="https://schema.org/NewsArticle">';
         html += '<div class="news-ticker-dot" style="' + dotStyle + '"></div>';
         html += '<div class="news-ticker-content">';
         html += imageHTML;

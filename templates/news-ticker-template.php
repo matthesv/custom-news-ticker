@@ -29,6 +29,8 @@ if (!empty($query->posts)) {
 }
 ?>
 <div class="news-ticker-container"
+     role="list"
+     aria-label="News Ticker"
      data-category="<?php echo esc_attr($atts['category']); ?>"
      data-posts-per-page="<?php echo intval($query->query_vars['posts_per_page']); ?>"
      data-last-timestamp="<?php echo esc_attr($last_timestamp); ?>"
@@ -46,8 +48,8 @@ if (!empty($query->posts)) {
         $iso_date  = get_the_date('c');
         $full_date = date_i18n('d.m.Y, H:i \U\h\r', $date_timestamp);
 
-        // Beitragsbild (Thumbnail)
-        $image = get_the_post_thumbnail(get_the_ID(), 'thumbnail'); 
+        // Beitragsbild (Thumbnail) mit verbessertem Alt-Attribut
+        $image = get_the_post_thumbnail(get_the_ID(), 'thumbnail', array('alt' => get_the_title())); 
         
         // Rand-/Dot-Farbe ermitteln
         $use_global_color = get_post_meta(get_the_ID(), 'nt_use_global_color', true);
@@ -66,7 +68,6 @@ if (!empty($query->posts)) {
         $background = get_post_meta(get_the_ID(), 'nt_background_color', true) === 'yes';
 
         // Neuer, dezenterer Hintergrundstil
-        // Hier kannst du gerne den Alpha-Wert, den Rahmen oder einen Schatten anpassen.
         $bg_style = $background
             ? 'background-color: ' . nt_hex_to_rgba($color, 0.08) . '; 
                border: 1px solid '   . nt_hex_to_rgba($color, 0.2) . '; 
@@ -76,6 +77,8 @@ if (!empty($query->posts)) {
         ?>
         
         <article class="news-ticker-entry"
+                 role="listitem"
+                 tabindex="0"
                  data-news-id="<?php the_ID(); ?>"
                  data-timestamp="<?php echo esc_attr($date_timestamp); ?>"
                  style="<?php echo esc_attr($bg_style); ?>"
@@ -109,14 +112,14 @@ if (!empty($query->posts)) {
                 </time>
 
                 <!-- Permalink für Suchmaschinen und Nutzer ohne JavaScript -->
-                <a class="news-ticker-permalink" href="<?php the_permalink(); ?>">Mehr lesen</a>
+                <a class="news-ticker-permalink" href="<?php the_permalink(); ?>" aria-label="Mehr lesen zu <?php the_title_attribute(); ?>">Mehr lesen</a>
             </div>
         </article>
     <?php endwhile; ?>
 </div>
 
 <?php if ($query->max_num_pages > 1) : ?>
-    <button id="news-ticker-load-more" class="news-ticker-load-more">
+    <button id="news-ticker-load-more" type="button" class="news-ticker-load-more" aria-label="Mehr Nachrichten laden">
         <span class="dashicons dashicons-arrow-down-alt2"></span> Mehr Laden
     </button>
 <?php endif; ?>

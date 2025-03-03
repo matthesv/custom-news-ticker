@@ -30,6 +30,12 @@
     transform: translateX(5px);
 }
 
+/* Fokus-Stil für Tastaturnavigation */
+.news-ticker-entry:focus {
+    outline: 2px solid #FF4500;
+    outline-offset: 2px;
+}
+
 /* The colored dot indicator */
 .news-ticker-dot {
     min-width: 12px;
