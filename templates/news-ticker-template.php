@@ -105,7 +105,7 @@ if (!empty($query->posts)) {
                 </time>
 
                 <a class="news-ticker-permalink" href="<?php the_permalink(); ?>" aria-label="Mehr lesen zu <?php the_title_attribute(); ?>">Mehr lesen</a>
-                <button class="nt-mark-read" aria-label="Als gelesen markieren">Mark as read</button>
+                <button class="nt-mark-read" aria-label="<?php esc_attr_e('Als gelesen markieren', 'news-ticker'); ?>"><?php _e('Als gelesen', 'news-ticker'); ?></button>
 
                 <?php
                 $sources = get_post_meta(get_the_ID(), 'nt_sources', true);

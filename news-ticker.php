@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.5.0
+Version: 1.5.1
 Author: Matthes
 */
 
@@ -47,7 +47,9 @@ function news_ticker_enqueue_assets() {
         'language'         => substr(get_locale(), 0, 2),
         'border_color'     => nt_get_border_color(),
         'static_threshold' => intval(get_option('news_ticker_static_threshold', 24)),
-        'refresh_interval' => intval(get_option('news_ticker_refresh_interval', 60)) // in Sekunden
+        'refresh_interval' => intval(get_option('news_ticker_refresh_interval', 60)), // in Sekunden
+        'mark_as_read_label' => __('Als gelesen markieren', 'news-ticker'),
+        'mark_as_read_text'  => __('Als gelesen', 'news-ticker')
     ]);
 }
 add_action('wp_enqueue_scripts', 'news_ticker_enqueue_assets');

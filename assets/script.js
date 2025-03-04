@@ -51,7 +51,7 @@ jQuery(document).ready(function ($) {
         html += '<div itemprop="articleBody">'+news.content+'</div>';
         html += '<time class="news-ticker-time" datetime="'+news.full_date+'" itemprop="datePublished" data-full-date="'+news.full_date+'">'+news.time+'</time>';
         html += '<a class="news-ticker-permalink" href="'+news.permalink+'">Mehr lesen</a>';
-        html += '<button class="nt-mark-read" aria-label="Als gelesen markieren">Mark as read</button>';
+        html += '<button class="nt-mark-read" aria-label="'+ newsTickerAjax.mark_as_read_label +'">'+ newsTickerAjax.mark_as_read_text +'</button>';
         html += '</div></article>';
         return html;
     }
