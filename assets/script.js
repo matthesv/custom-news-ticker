@@ -24,14 +24,24 @@ jQuery(document).ready(function ($) {
     
     // Rendert einen einzelnen News-Eintrag
     function renderNewsItem(news) {
-        // Alt-Attribut wird nun aus dem Titel generiert
-        var imageHTML = news.image ? '<img src="'+news.image+'" alt="'+news.title+'" itemprop="image">' : '';
-        var dotColor = news.border_color ? news.border_color : newsTickerAjax.border_color;
-        var rgb = hexToRgb(dotColor);
-        var rgbaPulse = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0.4)";
-        var rgbaTransparent = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0)";
-        var dotStyle = "background-color:" + dotColor + "; --dot-color:" + dotColor + "; --dot-color-pulse:" + rgbaPulse + "; --dot-color-pulse-transparent:" + rgbaTransparent + ";";
+        var currentTimestamp = Math.floor(Date.now() / 1000);
+        var staticThresholdSeconds = parseInt(newsTickerAjax.static_threshold, 10) * 3600;
+        var isStatic = (currentTimestamp - news.timestamp) >= staticThresholdSeconds;
+        var dotStyle = '';
         
+        if(isStatic) {
+            // Statischer, grauer Punkt: kein Pulsieren
+            var staticColor = '#ccc';
+            dotStyle = "background-color:" + staticColor + "; animation: none; border: 1px solid " + staticColor + ";";
+        } else {
+            var dotColor = news.border_color ? news.border_color : newsTickerAjax.border_color;
+            var rgb = hexToRgb(dotColor);
+            var rgbaPulse = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0.4)";
+            var rgbaTransparent = "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0)";
+            dotStyle = "background-color:" + dotColor + "; --dot-color:" + dotColor + "; --dot-color-pulse:" + rgbaPulse + "; --dot-color-pulse-transparent:" + rgbaTransparent + ";";
+        }
+        
+        var imageHTML = news.image ? '<img src="'+news.image+'" alt="'+news.title+'" itemprop="image">' : '';
         var html = '<article class="news-ticker-entry" data-news-id="'+news.ID+'" tabindex="0" role="listitem" itemscope itemtype="https://schema.org/NewsArticle">';
         html += '<div class="news-ticker-dot" style="' + dotStyle + '"></div>';
         html += '<div class="news-ticker-content">';
@@ -39,7 +49,6 @@ jQuery(document).ready(function ($) {
         html += '<header><h2 itemprop="headline">'+news.title+'</h2></header>';
         html += '<div itemprop="articleBody">'+news.content+'</div>';
         html += '<time class="news-ticker-time" datetime="'+news.full_date+'" itemprop="datePublished" data-full-date="'+news.full_date+'">'+news.time+'</time>';
-        // Permalink-Link – über CSS bei JS-Nutzung ausgeblendet
         html += '<a class="news-ticker-permalink" href="'+news.permalink+'">Mehr lesen</a>';
         html += '</div></article>';
         return html;
@@ -91,29 +100,21 @@ jQuery(document).ready(function ($) {
                 tickerContainer.find('.news-ticker-loading').remove();
                 if(response && response.news_items) {
                     if(mode === 'refresh') {
-                        // Bei Auto-Refresh: Neue Einträge nur hinzufügen, wenn sie noch nicht vorhanden sind
                         $.each(response.news_items, function(index, news) {
                             if (tickerContainer.find('.news-ticker-entry[data-news-id="'+news.ID+'"]').length === 0) {
                                 tickerContainer.prepend(renderNewsItem(news));
                             }
                         });
                     } else if(mode === 'load_more') {
-                        // Beim "Mehr Laden" anhängen
                         tickerContainer.append(renderNewsItems(response.news_items));
                     }
-                    // Aktualisiere den Offset sowohl intern als auch im DOM-Attribut
                     tickerContainer.data('offset', response.new_offset);
                     tickerContainer.attr('data-offset', response.new_offset);
                     
-                    // Zeige oder verstecke den "Mehr Laden"-Button
                     if(response.has_more) {
                         $('#news-ticker-load-more').show();
                     } else {
                         $('#news-ticker-load-more').hide();
-                    }
-                } else {
-                    if(mode === 'refresh') {
-                        // Keine neuen News – nichts tun
                     }
                 }
             },
@@ -163,7 +164,6 @@ jQuery(document).ready(function ($) {
         }
     });
     
-    // Aufräumen bei Seitenverlassen
     $(window).on('beforeunload', function() {
         clearInterval(refreshInterval);
     });

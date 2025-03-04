@@ -8,6 +8,7 @@
 if (!defined('ABSPATH')) exit;
 
 $default_color = nt_get_border_color();
+$static_threshold = intval(get_option('news_ticker_static_threshold', 24));
 
 // Sortiere die Posts im Query manuell nach effektivem Zeitstempel (DESC)
 if (!empty($query->posts)) {
@@ -44,19 +45,14 @@ if (!empty($query->posts)) {
         $language        = get_option('news_ticker_language', '');
         $translated_time = nt_translate_time($time_diff, $language);
 
-        // ISO-Format für datetime-Attribut
         $iso_date  = get_the_date('c');
         $full_date = date_i18n('d.m.Y, H:i \U\h\r', $date_timestamp);
 
-        // Beitragsbild (Thumbnail) mit verbessertem Alt-Attribut
-        $image = get_the_post_thumbnail(get_the_ID(), 'thumbnail', array('alt' => get_the_title())); 
-        
-        // Rand-/Dot-Farbe ermitteln
+        // Bestimme die zu verwendende Farbe (global oder individuell)
         $use_global_color = get_post_meta(get_the_ID(), 'nt_use_global_color', true);
         if ($use_global_color === '') {
             $use_global_color = 'yes';
         }
-
         if ($use_global_color === 'yes') {
             $color = $default_color;
         } else {
@@ -66,14 +62,20 @@ if (!empty($query->posts)) {
         
         // Hintergrund einfärben?
         $background = get_post_meta(get_the_ID(), 'nt_background_color', true) === 'yes';
-
-        // Neuer, dezenterer Hintergrundstil
         $bg_style = $background
             ? 'background-color: ' . nt_hex_to_rgba($color, 0.08) . '; 
                border: 1px solid '   . nt_hex_to_rgba($color, 0.2) . '; 
                border-radius: 4px; 
                padding: 15px;'
             : '';
+        
+        // Prüfe, ob der Beitrag älter als der eingestellte Schwellenwert ist
+        $is_static = (current_time('timestamp') - $date_timestamp) >= ($static_threshold * 3600);
+        if ($is_static) {
+            $dot_style = "background-color: #ccc; animation: none; border: 1px solid #ccc;";
+        } else {
+            $dot_style = "--dot-color: " . esc_attr($color) . "; --dot-color-pulse: " . nt_hex_to_rgba($color, 0.4) . "; --dot-color-pulse-transparent: " . nt_hex_to_rgba($color, 0) . "; background-color: " . esc_attr($color) . ";";
+        }
         ?>
         
         <article class="news-ticker-entry"
@@ -84,17 +86,11 @@ if (!empty($query->posts)) {
                  style="<?php echo esc_attr($bg_style); ?>"
                  itemscope itemtype="https://schema.org/NewsArticle">
 
-            <div class="news-ticker-dot"
-                 style="
-                     --dot-color: <?php echo esc_attr($color); ?>;
-                     --dot-color-pulse: <?php echo nt_hex_to_rgba($color, 0.4); ?>;
-                     --dot-color-pulse-transparent: <?php echo nt_hex_to_rgba($color, 0); ?>;
-                     background-color: <?php echo esc_attr($color); ?>;
-                 ">
+            <div class="news-ticker-dot" style="<?php echo esc_attr($dot_style); ?>">
             </div>
 
             <div class="news-ticker-content">
-                <?php echo $image; ?>
+                <?php echo get_the_post_thumbnail(get_the_ID(), 'thumbnail', ['alt' => get_the_title()]); ?>
 
                 <header>
                     <h2 itemprop="headline"><?php the_title(); ?></h2>
@@ -118,7 +114,6 @@ if (!empty($query->posts)) {
                 // Quellen ausgeben, falls vorhanden
                 $sources = get_post_meta(get_the_ID(), 'nt_sources', true);
                 if (!empty($sources)) :
-                    // Links zerlegen
                     $links = array_map('trim', explode(',', $sources));
                     ?>
                     <div class="news-ticker-sources" style="margin-top: 10px;">
@@ -127,16 +122,13 @@ if (!empty($query->posts)) {
                             <?php foreach ($links as $link) : ?>
                                 <li>
                                     <?php
-                                    // Wenn Link eine URL ist, klickbar ausgeben; sonst nur Text
                                     $maybe_url = trim($link);
                                     if (filter_var($maybe_url, FILTER_VALIDATE_URL)) {
-                                        // Korrekte URL
                                         $escaped_url = esc_url($maybe_url);
                                         echo '<a href="' . $escaped_url . '" target="_blank" rel="noopener noreferrer">'
                                              . esc_html($maybe_url) .
                                              '</a>';
                                     } else {
-                                        // Kein valider Link, einfach als Text ausgeben
                                         echo esc_html($link);
                                     }
                                     ?>
@@ -157,7 +149,6 @@ if (!empty($query->posts)) {
     </button>
 <?php endif; ?>
 
-<!-- Fallback für Nutzer ohne JavaScript: Link zur vollständigen, paginierten Übersicht -->
 <noscript>
     <div class="news-ticker-noscript">
         <p>JavaScript ist deaktiviert. Bitte besuchen Sie die <a href="<?php echo esc_url(get_post_type_archive_link('news_ticker')); ?>">vollständige Übersicht</a> der News.</p>

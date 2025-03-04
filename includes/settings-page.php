@@ -22,36 +22,39 @@ function nt_settings_page() {
     // Einstellungen speichern
     if (isset($_POST['nt_save_settings']) && current_user_can('manage_options')) {
         if (check_admin_referer('nt_settings_nonce')) {
-            $language = isset($_POST['nt_language']) ? sanitize_text_field($_POST['nt_language']) : '';
+            $language         = isset($_POST['nt_language']) ? sanitize_text_field($_POST['nt_language']) : '';
             $refresh_interval = isset($_POST['nt_refresh_interval']) ? intval($_POST['nt_refresh_interval']) : 60;
-            $entries_count = isset($_POST['nt_entries_count']) ? intval($_POST['nt_entries_count']) : 5;
-            $border_color = isset($_POST['nt_border_color']) ? sanitize_text_field($_POST['nt_border_color']) : '#FF4500';
-            $color_source = isset($_POST['nt_color_source']) ? sanitize_text_field($_POST['nt_color_source']) : 'custom';
+            $entries_count    = isset($_POST['nt_entries_count']) ? intval($_POST['nt_entries_count']) : 5;
+            $border_color     = isset($_POST['nt_border_color']) ? sanitize_text_field($_POST['nt_border_color']) : '#FF4500';
+            $color_source     = isset($_POST['nt_color_source']) ? sanitize_text_field($_POST['nt_color_source']) : 'custom';
+            $static_threshold = isset($_POST['nt_static_threshold']) ? intval($_POST['nt_static_threshold']) : 24;
             
             update_option('news_ticker_language', $language);
             update_option('news_ticker_refresh_interval', $refresh_interval);
             update_option('news_ticker_entries_count', $entries_count);
             update_option('news_ticker_border_color', $border_color);
             update_option('news_ticker_color_source', $color_source);
+            update_option('news_ticker_static_threshold', $static_threshold);
             
             echo '<div class="notice notice-success is-dismissible"><p>' . __('Einstellungen gespeichert.', 'news-ticker') . '</p></div>';
         }
     }
     
     // Einstellungen abrufen
-    $language = get_option('news_ticker_language', '');
+    $language         = get_option('news_ticker_language', '');
     $refresh_interval = get_option('news_ticker_refresh_interval', 60);
-    $entries_count = get_option('news_ticker_entries_count', 5);
-    $border_color = get_option('news_ticker_border_color', '#FF4500');
-    $color_source = get_option('news_ticker_color_source', 'custom');
+    $entries_count    = get_option('news_ticker_entries_count', 5);
+    $border_color     = get_option('news_ticker_border_color', '#FF4500');
+    $color_source     = get_option('news_ticker_color_source', 'custom');
+    $static_threshold = get_option('news_ticker_static_threshold', 24);
     
     // Theme-Farben abrufen
-    $primary_color = get_theme_mod('primary_color', '#0073aa');
+    $primary_color   = get_theme_mod('primary_color', '#0073aa');
     $secondary_color = get_theme_mod('secondary_color', '#00a0d2');
     
     // Verfügbare Sprachen
     $languages = [
-        '' => __('WordPress-Sprache verwenden', 'news-ticker'),
+        ''   => __('WordPress-Sprache verwenden', 'news-ticker'),
         'en' => __('Englisch', 'news-ticker'),
         'de' => __('Deutsch', 'news-ticker'),
         'fr' => __('Französisch', 'news-ticker'),
@@ -129,6 +132,14 @@ function nt_settings_page() {
                         <p class="description"><?php _e('Wählen Sie die Farbe, die verwendet wird, wenn "Benutzerdefinierte Farbe" ausgewählt ist.', 'news-ticker'); ?></p>
                     </td>
                 </tr>
+                
+                <tr>
+                    <th scope="row"><?php _e('Statischer Modus ab (Stunden)', 'news-ticker'); ?></th>
+                    <td>
+                        <input type="number" name="nt_static_threshold" value="<?php echo esc_attr($static_threshold); ?>" min="0" max="999" step="1" class="small-text" />
+                        <p class="description"><?php _e('Meldungen, die älter als die angegebene Stundenanzahl sind, werden ohne Pulsieren dargestellt.', 'news-ticker'); ?></p>
+                    </td>
+                </tr>
             </table>
             
             <p class="submit">
@@ -153,4 +164,4 @@ function nt_settings_page() {
     </div>
     <?php
 }
-?>
+?> 

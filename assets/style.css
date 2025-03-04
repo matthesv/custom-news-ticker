@@ -240,3 +240,10 @@
     text-decoration: underline;
   }
   
+  /* Statischer Punkt für alte Nachrichten: kein Pulsieren, graue Darstellung */
+.news-ticker-dot.static {
+    animation: none;
+    background-color: #ccc;
+    box-shadow: none;
+    border: 1px solid #ccc;
+}

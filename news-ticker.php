@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.4.6
+Version: 1.4.7
 Author: Matthes
 */
 
@@ -45,10 +45,11 @@ function news_ticker_enqueue_assets() {
     wp_enqueue_style('news-ticker-style', plugins_url('assets/style.css', __FILE__), array(), $style_version);
     wp_enqueue_script('news-ticker-script', plugins_url('assets/script.js', __FILE__), array('jquery'), $script_version, true);
     wp_localize_script('news-ticker-script', 'newsTickerAjax', [
-        'ajax_url'    => admin_url('admin-ajax.php'),
-        'nonce'       => wp_create_nonce('news_ticker_nonce'),
-        'language'    => substr(get_locale(), 0, 2),
-        'border_color'=> nt_get_border_color() // Nutzt die Funktion, die ggf. Theme-Farben berücksichtigt
+        'ajax_url'         => admin_url('admin-ajax.php'),
+        'nonce'            => wp_create_nonce('news_ticker_nonce'),
+        'language'         => substr(get_locale(), 0, 2),
+        'border_color'     => nt_get_border_color(), // Nutzt die Funktion, die ggf. Theme-Farben berücksichtigt
+        'static_threshold' => intval(get_option('news_ticker_static_threshold', 24)) // Schwelle in Stunden
     ]);
 }
 add_action('wp_enqueue_scripts', 'news_ticker_enqueue_assets');
