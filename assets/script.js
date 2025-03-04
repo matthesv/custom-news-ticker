@@ -30,7 +30,6 @@ jQuery(document).ready(function ($) {
         var dotStyle = '';
         
         if(isStatic) {
-            // Statischer, grauer Punkt: kein Pulsieren
             var staticColor = '#ccc';
             dotStyle = "background-color:" + staticColor + "; animation: none; border: 1px solid " + staticColor + ";";
         } else {
@@ -77,7 +76,6 @@ jQuery(document).ready(function ($) {
             nonce: newsTickerAjax.nonce
         };
         
-        // Bei "Mehr Laden" IDs der bereits geladenen Beiträge mitgeben
         if (mode === 'load_more') {
             var excludeIDs = [];
             $('.news-ticker-entry').each(function() {
@@ -129,10 +127,27 @@ jQuery(document).ready(function ($) {
     // Initialer Ladevorgang
     loadNews('refresh', 0);
     
-    // Auto-Refresh alle 60 Sekunden
+    // Auto-Refresh basierend auf den Einstellungen
+    var autoRefreshEnabled = true;
     var refreshInterval = setInterval(function() {
         loadNews('refresh', 0);
-    }, 60000);
+    }, newsTickerAjax.refresh_interval * 1000);
+    
+    // Pause/Resume Auto-Refresh Button
+    $('#news-ticker-toggle-refresh').on('click', function(e) {
+        e.preventDefault();
+        if(autoRefreshEnabled){
+            clearInterval(refreshInterval);
+            autoRefreshEnabled = false;
+            $(this).text('Resume Auto-Refresh');
+        } else {
+            refreshInterval = setInterval(function() {
+                loadNews('refresh', 0);
+            }, newsTickerAjax.refresh_interval * 1000);
+            autoRefreshEnabled = true;
+            $(this).text('Pause Auto-Refresh');
+        }
+    });
     
     // "Mehr Laden" Button
     $(document).on('click', '#news-ticker-load-more', function(e) {
@@ -141,7 +156,7 @@ jQuery(document).ready(function ($) {
         loadNews('load_more', currentOffset);
     });
     
-    // Tooltip-Logik: Bei Hover über die Zeitangabe wird das vollständige Datum angezeigt
+    // Tooltip-Logik
     $(document).on('mouseenter', '.news-ticker-time', function() {
         var fullDate = $(this).data('full-date');
         if (fullDate) {

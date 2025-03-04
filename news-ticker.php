@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.4.7
+Version: 1.4.8
 Author: Matthes
 */
 
@@ -25,11 +25,7 @@ require_once NEWS_TICKER_PATH . 'includes/meta-box.php'; // Meta Box für indivi
 require_once NEWS_TICKER_PATH . 'includes/meta-box-update-date.php'; // Meta Box: Aktualisierungsdatum berücksichtigen
 require_once NEWS_TICKER_PATH . 'includes/meta-box-background.php'; // NEU: Meta Box für Hintergrund einfärben
 require_once NEWS_TICKER_PATH . 'includes/admin-scripts.php'; // Admin Scripts für Farbpicker
-
-// Neue Datei zur Admin-Filterung einbinden (Filter im Menü "Alle Ticker Meldungen")
 require_once NEWS_TICKER_PATH . 'includes/admin-filters.php';
-
-// **NEU**: Meta Box für "Verwendete Quellen"
 require_once NEWS_TICKER_PATH . 'includes/meta-box-sources.php';
 
 // Assets registrieren mit Cache-Busting und Nonce
@@ -48,8 +44,9 @@ function news_ticker_enqueue_assets() {
         'ajax_url'         => admin_url('admin-ajax.php'),
         'nonce'            => wp_create_nonce('news_ticker_nonce'),
         'language'         => substr(get_locale(), 0, 2),
-        'border_color'     => nt_get_border_color(), // Nutzt die Funktion, die ggf. Theme-Farben berücksichtigt
-        'static_threshold' => intval(get_option('news_ticker_static_threshold', 24)) // Schwelle in Stunden
+        'border_color'     => nt_get_border_color(),
+        'static_threshold' => intval(get_option('news_ticker_static_threshold', 24)),
+        'refresh_interval' => intval(get_option('news_ticker_refresh_interval', 60)) // in Sekunden
     ]);
 }
 add_action('wp_enqueue_scripts', 'news_ticker_enqueue_assets');

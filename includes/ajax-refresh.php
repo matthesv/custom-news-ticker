@@ -10,7 +10,6 @@ require_once NEWS_TICKER_PATH . 'includes/news-functions.php';
  * - 'load_more': Lädt ältere Beiträge, wobei bereits geladene Beiträge ausgeschlossen werden.
  */
 function fetch_latest_news() {
-    // Sicherheitsüberprüfung: Prüfe Nonce
     if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'news_ticker_nonce')) {
         wp_send_json_error('Unauthorized');
     }
@@ -38,7 +37,6 @@ function fetch_latest_news() {
     }
 
     if ($mode === 'load_more') {
-        // IDs der bereits geladenen Beiträge ausschließen
         if (isset($_POST['exclude_ids']) && is_array($_POST['exclude_ids'])) {
             $exclude_ids = array_map('intval', $_POST['exclude_ids']);
             $args['post__not_in'] = $exclude_ids;
@@ -47,7 +45,6 @@ function fetch_latest_news() {
         }
         $previous_count = count($exclude_ids);
 
-        // Gesamtzahl ermitteln: separate Query ohne Ausschlüsse
         $count_args = $args;
         if (isset($count_args['post__not_in'])) {
             unset($count_args['post__not_in']);
@@ -58,7 +55,15 @@ function fetch_latest_news() {
     } else {
         $args['offset'] = $offset;
         $previous_count = $offset;
-        // Bei Refresh-Modus wird die Gesamtzahl aus der Query ermittelt
+    }
+
+    // Caching für den Refresh-Modus (kurze Dauer, z.B. 10 Sekunden)
+    if ($mode === 'refresh') {
+        $transient_key = 'nt_news_refresh_' . md5(serialize($args));
+        $cached_response = get_transient($transient_key);
+        if ($cached_response !== false) {
+            wp_send_json($cached_response);
+        }
     }
 
     $query = nt_get_news_query($args);
@@ -72,11 +77,17 @@ function fetch_latest_news() {
     }
     $has_more = $new_offset < $total_posts;
 
-    wp_send_json([
+    $response = [
         'news_items' => $news_items,
         'new_offset' => $new_offset,
         'has_more'   => $has_more
-    ]);
+    ];
+
+    if ($mode === 'refresh') {
+        set_transient($transient_key, $response, 10);
+    }
+
+    wp_send_json($response);
 }
 
 add_action('wp_ajax_fetch_news', 'fetch_latest_news');

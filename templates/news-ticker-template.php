@@ -10,7 +10,6 @@ if (!defined('ABSPATH')) exit;
 $default_color = nt_get_border_color();
 $static_threshold = intval(get_option('news_ticker_static_threshold', 24));
 
-// Sortiere die Posts im Query manuell nach effektivem Zeitstempel (DESC)
 if (!empty($query->posts)) {
     usort($query->posts, function($a, $b) {
         $a_use_updated = get_post_meta($a->ID, 'nt_use_updated_date', true) === 'yes';
@@ -21,7 +20,6 @@ if (!empty($query->posts)) {
     });
 }
 
-// Berechne den effektiven Zeitstempel des letzten (ältesten) Beitrags
 $last_timestamp = 0;
 if (!empty($query->posts)) {
     $last_post = end($query->posts);
@@ -36,7 +34,6 @@ if (!empty($query->posts)) {
      data-posts-per-page="<?php echo intval($query->query_vars['posts_per_page']); ?>"
      data-last-timestamp="<?php echo esc_attr($last_timestamp); ?>"
      style="border-left: 3px solid <?php echo esc_attr($default_color); ?>;">
-
     <?php while ($query->have_posts()) : $query->the_post(); ?>
         <?php 
         $use_update_date = get_post_meta(get_the_ID(), 'nt_use_updated_date', true) === 'yes';
@@ -48,7 +45,6 @@ if (!empty($query->posts)) {
         $iso_date  = get_the_date('c');
         $full_date = date_i18n('d.m.Y, H:i \U\h\r', $date_timestamp);
 
-        // Bestimme die zu verwendende Farbe (global oder individuell)
         $use_global_color = get_post_meta(get_the_ID(), 'nt_use_global_color', true);
         if ($use_global_color === '') {
             $use_global_color = 'yes';
@@ -60,7 +56,6 @@ if (!empty($query->posts)) {
             $color = $custom_color ? $custom_color : $default_color;
         }
         
-        // Hintergrund einfärben?
         $background = get_post_meta(get_the_ID(), 'nt_background_color', true) === 'yes';
         $bg_style = $background
             ? 'background-color: ' . nt_hex_to_rgba($color, 0.08) . '; 
@@ -69,7 +64,6 @@ if (!empty($query->posts)) {
                padding: 15px;'
             : '';
         
-        // Prüfe, ob der Beitrag älter als der eingestellte Schwellenwert ist
         $is_static = (current_time('timestamp') - $date_timestamp) >= ($static_threshold * 3600);
         if ($is_static) {
             $dot_style = "background-color: #ccc; animation: none; border: 1px solid #ccc;";
@@ -107,11 +101,9 @@ if (!empty($query->posts)) {
                     <?php echo esc_html($translated_time); ?>
                 </time>
 
-                <!-- Permalink für Suchmaschinen und Nutzer ohne JavaScript -->
                 <a class="news-ticker-permalink" href="<?php the_permalink(); ?>" aria-label="Mehr lesen zu <?php the_title_attribute(); ?>">Mehr lesen</a>
 
                 <?php
-                // Quellen ausgeben, falls vorhanden
                 $sources = get_post_meta(get_the_ID(), 'nt_sources', true);
                 if (!empty($sources)) :
                     $links = array_map('trim', explode(',', $sources));
@@ -148,6 +140,9 @@ if (!empty($query->posts)) {
         <span class="dashicons dashicons-arrow-down-alt2"></span> Mehr Laden
     </button>
 <?php endif; ?>
+
+<!-- Button zum Pause/Resume des Auto-Refresh -->
+<button id="news-ticker-toggle-refresh" type="button" class="news-ticker-toggle-refresh" aria-label="Auto-Refresh pausieren">Pause Auto-Refresh</button>
 
 <noscript>
     <div class="news-ticker-noscript">
