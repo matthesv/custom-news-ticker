@@ -135,14 +135,16 @@ if (!empty($query->posts)) {
     <?php endwhile; ?>
 </div>
 
-<?php if ($query->max_num_pages > 1) : ?>
-    <button id="news-ticker-load-more" type="button" class="news-ticker-load-more" aria-label="Mehr Nachrichten laden">
-        <span class="dashicons dashicons-arrow-down-alt2"></span> Mehr Laden
+<div class="news-ticker-controls">
+    <?php if ($query->max_num_pages > 1) : ?>
+        <button id="news-ticker-load-more" type="button" class="news-ticker-load-more" aria-label="Mehr Nachrichten laden">
+            <span class="dashicons dashicons-arrow-down-alt2"></span> Mehr Laden
+        </button>
+    <?php endif; ?>
+    <button id="news-ticker-toggle-refresh" type="button" class="news-ticker-load-more" aria-label="Auto Refresh aus">
+        <span class="dashicons dashicons-update"></span> Auto Refresh aus
     </button>
-<?php endif; ?>
-
-<!-- Button zum Pause/Resume des Auto-Refresh -->
-<button id="news-ticker-toggle-refresh" type="button" class="news-ticker-toggle-refresh" aria-label="Auto-Refresh pausieren">Pause Auto-Refresh</button>
+</div>
 
 <noscript>
     <div class="news-ticker-noscript">

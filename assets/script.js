@@ -133,19 +133,19 @@ jQuery(document).ready(function ($) {
         loadNews('refresh', 0);
     }, newsTickerAjax.refresh_interval * 1000);
     
-    // Pause/Resume Auto-Refresh Button
+    // Auto Refresh Toggle Button (Text: "Auto Refresh aus" wenn aktiv, "Auto Refresh an" wenn pausiert)
     $('#news-ticker-toggle-refresh').on('click', function(e) {
         e.preventDefault();
         if(autoRefreshEnabled){
             clearInterval(refreshInterval);
             autoRefreshEnabled = false;
-            $(this).text('Resume Auto-Refresh');
+            $(this).html('<span class="dashicons dashicons-update"></span> Auto Refresh an');
         } else {
             refreshInterval = setInterval(function() {
                 loadNews('refresh', 0);
             }, newsTickerAjax.refresh_interval * 1000);
             autoRefreshEnabled = true;
-            $(this).text('Pause Auto-Refresh');
+            $(this).html('<span class="dashicons dashicons-update"></span> Auto Refresh aus');
         }
     });
     
