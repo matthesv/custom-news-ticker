@@ -270,3 +270,13 @@
 .nt-mark-read:hover {
     text-decoration: underline;
 }
+
+.nt-mark-read {
+    background-color: transparent;
+    border: none;
+    color: #0073aa;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 5px;
+    margin-left: 8px; 
+}
