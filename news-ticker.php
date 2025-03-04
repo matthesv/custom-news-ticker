@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.4.9
+Version: 1.5.0
 Author: Matthes
 */
 
@@ -27,6 +27,7 @@ require_once NEWS_TICKER_PATH . 'includes/meta-box-background.php'; // NEU: Meta
 require_once NEWS_TICKER_PATH . 'includes/admin-scripts.php'; // Admin Scripts für Farbpicker
 require_once NEWS_TICKER_PATH . 'includes/admin-filters.php';
 require_once NEWS_TICKER_PATH . 'includes/meta-box-sources.php';
+require_once NEWS_TICKER_PATH . 'includes/breaking-news.php'; // NEU: Breaking News Funktionen
 
 // Assets registrieren mit Cache-Busting und Nonce
 function news_ticker_enqueue_assets() {

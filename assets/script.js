@@ -41,14 +41,17 @@ jQuery(document).ready(function ($) {
         }
         
         var imageHTML = news.image ? '<img src="'+news.image+'" alt="'+news.title+'" itemprop="image">' : '';
+        // Breaking-News Badge und "Mark as Read"-Button hinzufügen
+        var breakingBadge = news.is_breaking ? '<span class="nt-breaking-news">' + news.breaking_text + '</span>' : '';
         var html = '<article class="news-ticker-entry" data-news-id="'+news.ID+'" tabindex="0" role="listitem" itemscope itemtype="https://schema.org/NewsArticle">';
         html += '<div class="news-ticker-dot" style="' + dotStyle + '"></div>';
         html += '<div class="news-ticker-content">';
         html += imageHTML;
-        html += '<header><h2 itemprop="headline">'+news.title+'</h2></header>';
+        html += '<header>' + breakingBadge + '<h2 itemprop="headline">'+news.title+'</h2></header>';
         html += '<div itemprop="articleBody">'+news.content+'</div>';
         html += '<time class="news-ticker-time" datetime="'+news.full_date+'" itemprop="datePublished" data-full-date="'+news.full_date+'">'+news.time+'</time>';
         html += '<a class="news-ticker-permalink" href="'+news.permalink+'">Mehr lesen</a>';
+        html += '<button class="nt-mark-read" aria-label="Als gelesen markieren">Mark as read</button>';
         html += '</div></article>';
         return html;
     }
@@ -149,6 +152,17 @@ jQuery(document).ready(function ($) {
         }
     });
     
+    // Auto-Pause bei inaktivem Tab mittels Page Visibility API
+    document.addEventListener("visibilitychange", function() {
+        if (document.visibilityState === "hidden") {
+            clearInterval(refreshInterval);
+        } else if (document.visibilityState === "visible" && autoRefreshEnabled) {
+            refreshInterval = setInterval(function() {
+                loadNews('refresh', 0);
+            }, newsTickerAjax.refresh_interval * 1000);
+        }
+    });
+    
     // "Mehr Laden" Button
     $(document).on('click', '#news-ticker-load-more', function(e) {
         e.preventDefault();
@@ -177,6 +191,14 @@ jQuery(document).ready(function ($) {
             });
             $(this).removeData('tooltip');
         }
+    });
+    
+    // "Mark as read" Button: Entfernt den entsprechenden News-Eintrag (optisch)
+    $(document).on('click', '.nt-mark-read', function(e) {
+        e.preventDefault();
+        $(this).closest('.news-ticker-entry').fadeOut(300, function() {
+            $(this).remove();
+        });
     });
     
     $(window).on('beforeunload', function() {

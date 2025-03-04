@@ -247,3 +247,26 @@
     gap: 10px;
     margin-top: 10px;
 }
+
+/* Neue Styles: Breaking News Badge */
+.nt-breaking-news {
+    background-color: #ff0000;
+    color: #fff;
+    padding: 2px 6px;
+    font-size: 0.8em;
+    border-radius: 3px;
+    margin-right: 5px;
+}
+
+/* Neue Styles: "Mark as read" Button */
+.nt-mark-read {
+    background-color: transparent;
+    border: none;
+    color: #0073aa;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+.nt-mark-read:hover {
+    text-decoration: underline;
+}

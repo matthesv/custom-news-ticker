@@ -70,6 +70,8 @@ if (!empty($query->posts)) {
         } else {
             $dot_style = "--dot-color: " . esc_attr($color) . "; --dot-color-pulse: " . nt_hex_to_rgba($color, 0.4) . "; --dot-color-pulse-transparent: " . nt_hex_to_rgba($color, 0) . "; background-color: " . esc_attr($color) . ";";
         }
+        // Hole Breaking-News Badge (über die neue Funktion)
+        $breaking_badge = nt_get_breaking_badge($date_timestamp);
         ?>
         
         <article class="news-ticker-entry"
@@ -87,6 +89,7 @@ if (!empty($query->posts)) {
                 <?php echo get_the_post_thumbnail(get_the_ID(), 'thumbnail', ['alt' => get_the_title()]); ?>
 
                 <header>
+                    <?php echo $breaking_badge; // Ausgabe des Breaking-News Badges ?>
                     <h2 itemprop="headline"><?php the_title(); ?></h2>
                 </header>
 
@@ -102,6 +105,7 @@ if (!empty($query->posts)) {
                 </time>
 
                 <a class="news-ticker-permalink" href="<?php the_permalink(); ?>" aria-label="Mehr lesen zu <?php the_title_attribute(); ?>">Mehr lesen</a>
+                <button class="nt-mark-read" aria-label="Als gelesen markieren">Mark as read</button>
 
                 <?php
                 $sources = get_post_meta(get_the_ID(), 'nt_sources', true);
