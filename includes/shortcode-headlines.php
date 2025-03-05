@@ -4,24 +4,25 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Shortcode: [news_ticker_headlines categories="cat1,cat2,..."]
- * Zeigt nur die Titel aller News aus den angegebenen Kategorien als Laufband-Ticker.
- * Beim Klick auf eine Headline wird die in der Kategorie hinterlegte URL aufgerufen.
+ * Shortcode: [news_ticker_headlines categories="cat1,cat2" interval="5000"]
+ * Zeigt alle Headlines der angegebenen Kategorien an.
+ * Jede Meldung wird für X Sekunden angezeigt, dann sanft ausgeblendet.
  */
 function render_news_ticker_headlines($atts) {
     $atts = shortcode_atts([
-        'categories' => '', // Kommagetrennte Liste von Category-Slugs
+        'categories' => '',  // Kommagetrennte Category-Slugs
+        'interval'   => 5000 // Zeit (ms) zwischen Meldungen
     ], $atts, 'news_ticker_headlines');
 
-    // Kategorien aufsplitten
+    // Kategorien in Array umwandeln
     $cat_slugs = array_filter(array_map('trim', explode(',', $atts['categories'])));
 
-    // Falls keine Kategorien angegeben sind, geben wir eine kurze Info aus
+    // Falls keine Kategorien angegeben, kurze Meldung ausgeben
     if (empty($cat_slugs)) {
         return '<p>' . __('Keine Kategorien angegeben.', 'news-ticker') . '</p>';
     }
 
-    // WP_Query für alle Beiträge aus diesen Kategorien
+    // WP_Query: Alle Beiträge aus diesen Kategorien
     $args = [
         'post_type'      => 'news_ticker',
         'posts_per_page' => -1,
@@ -42,32 +43,21 @@ function render_news_ticker_headlines($atts) {
         return '<p>' . __('Keine News gefunden.', 'news-ticker') . '</p>';
     }
 
-    // HTML-Ausgabe vorbereiten
     ob_start();
     ?>
-    <div class="news-ticker-headlines-container">
+    <!-- Container: Äußere Box für den Ticker -->
+    <div class="news-ticker-headlines-container" 
+         data-interval="<?php echo esc_attr($atts['interval']); ?>">
+
+        <!-- Wrapper: Enthält die einzelnen Headlines -->
         <div class="news-ticker-headlines-wrapper">
             <?php
             while ($query->have_posts()) {
                 $query->the_post();
-                
-                // Kategorie-URL ermitteln
-                $headline_url = '#';
-                $post_cats = wp_get_post_terms(get_the_ID(), 'ticker_category');
-                
-                // Wir nehmen die erste Kategorie, die in $cat_slugs enthalten ist
-                foreach ($post_cats as $pc) {
-                    if (in_array($pc->slug, $cat_slugs)) {
-                        $maybe_url = get_term_meta($pc->term_id, 'nt_category_url', true);
-                        if ($maybe_url) {
-                            $headline_url = $maybe_url;
-                            break;
-                        }
-                    }
-                }
                 ?>
                 <div class="news-ticker-headline">
-                    <a href="<?php echo esc_url($headline_url); ?>" target="_self">
+                    <!-- Bei Klick könntest du statt Permalink auch eine Kategorie-URL verwenden -->
+                    <a href="<?php the_permalink(); ?>">
                         <?php the_title(); ?>
                     </a>
                 </div>
@@ -77,8 +67,33 @@ function render_news_ticker_headlines($atts) {
             ?>
         </div>
     </div>
+
+    <!-- Einfaches JS (ohne jQuery) zum zyklischen Einblenden -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.news-ticker-headlines-container');
+        if (!container) return;
+
+        const interval = parseInt(container.getAttribute('data-interval'), 10) || 5000;
+        const items = container.querySelectorAll('.news-ticker-headline');
+        if (!items.length) return;
+
+        let current = 0;
+        // Erste Meldung aktiv setzen
+        items[current].classList.add('active');
+
+        // Wechsle alle X ms zur nächsten Meldung
+        setInterval(() => {
+            // Aktuelle Meldung deaktivieren
+            items[current].classList.remove('active');
+            // Index hochzählen (Modulo Anzahl)
+            current = (current + 1) % items.length;
+            // Neue Meldung aktivieren
+            items[current].classList.add('active');
+        }, interval);
+    });
+    </script>
     <?php
-    $output = ob_get_clean();
-    return $output;
+    return ob_get_clean();
 }
 add_shortcode('news_ticker_headlines', 'render_news_ticker_headlines');

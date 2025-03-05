@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.6.0
+Version: 1.6.1
 Author: Matthes
 */
 
@@ -44,4 +44,28 @@ function news_ticker_enqueue_assets() {
     $script_version = file_exists($script_path) ? filemtime($script_path) : false;
     
     wp_enqueue_style('news-ticker-style', plugins_url('assets/style.css', __FILE__), array(), $style_version);
-    wp_enqueue_script('news-ticker-script', plugins_url('assets/script.js', __FILE__), array('jq
+    wp_enqueue_script('news-ticker-script', plugins_url('assets/script.js', __FILE__), array('jquery'), $script_version, true);
+    wp_localize_script('news-ticker-script', 'newsTickerAjax', [
+        'ajax_url'            => admin_url('admin-ajax.php'),
+        'nonce'               => wp_create_nonce('news_ticker_nonce'),
+        'language'            => substr(get_locale(), 0, 2),
+        'border_color'        => nt_get_border_color(),
+        'static_threshold'    => intval(get_option('news_ticker_static_threshold', 24)),
+        'refresh_interval'    => intval(get_option('news_ticker_refresh_interval', 60)), // in Sekunden
+        'mark_as_read_label'  => __('Als gelesen markieren', 'news-ticker'),
+        'mark_as_read_text'   => __('Als gelesen markieren', 'news-ticker')
+    ]);
+}
+add_action('wp_enqueue_scripts', 'news_ticker_enqueue_assets');
+
+// Plugin Update Checker laden (GitHub) - optional
+require_once NEWS_TICKER_PATH . 'includes/plugin-update-checker/plugin-update-checker.php';
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$myUpdateChecker = PucFactory::buildUpdateChecker(
+    'https://github.com/matthesv/custom-news-ticker/',
+    __FILE__,
+    'custom-news-ticker'
+);
+$myUpdateChecker->setBranch('main');
+?>

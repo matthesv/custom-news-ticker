@@ -268,79 +268,58 @@
     margin-top: 5px;
     margin-left: 8px;
 }
-
-/* ------------------------------------------- */
-/* Container: Übergeordnete Box für den Ticker*/
-/* ------------------------------------------- */
+/* -------------------------------------------- */
+/* Äußerer Container: rote Leiste, weiße Schrift*/
+/* -------------------------------------------- */
 .news-ticker-headlines-container {
-    width: 100%;              /* Füllt die verfügbare Breite */
-    height: 40px;             /* Feste Höhe; anpassen nach Bedarf */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 40px;         /* Höhe anpassen */
     background-color: #c30000;/* Hintergrundfarbe (rot) */
     color: #fff;              /* Textfarbe */
-    overflow: hidden;         /* Verhindert Scrollbalken */
-    position: relative;       /* Für absolute Positionierung von Inhalten */
-    display: flex;            /* Ermöglicht zentriertes Ausrichten */
-    align-items: center;      /* Vertikale Zentrierung */
+    padding: 0 15px;          /* Innenabstand links/rechts */
+    position: relative;
+    overflow: hidden;
     font-family: sans-serif;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 14px;
+    box-sizing: border-box;
   }
   
-  /* ------------------------------------------------ */
-  /* Wrapper: Enthält alle Headline-Elemente in einer */
-  /* Zeile und bewegt sie per CSS-Animation           */
-  /* ------------------------------------------------ */
+  /* Der Wrapper, in dem alle Headlines liegen */
   .news-ticker-headlines-wrapper {
-    display: inline-block;            /* Eine durchgehende Zeile */
-    white-space: nowrap;             /* Verhindert Umbrüche */
-    padding-left: 100%;             /* Startet rechts außerhalb des Containers */
-    animation: headlines-scroll 15s linear infinite;
-    /* 15s = Dauer des kompletten Durchlaufs, nach Belieben anpassen */
+    position: relative; 
+    flex-grow: 1;
   }
   
-  /* ---------------------------------- */
-  /* Einzelne Headline mit Link-Element */
-  /* ---------------------------------- */
+  /* Einzelne Meldung: standardmäßig unsichtbar */
   .news-ticker-headline {
-    display: inline-block;
-    margin-right: 40px; /* Abstand zwischen den Headlines */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  
+    /* Fade-Effekt: Opacity + Transition */
+    opacity: 0;
+    display: none;
+    transition: opacity 0.5s ease-in-out;
   }
   
+  /* Die "aktive" Meldung wird eingeblendet */
+  .news-ticker-headline.active {
+    display: block;   /* sichtbar */
+    opacity: 1;       /* volle Deckkraft */
+  }
+  
+  /* Links in den Headlines */
   .news-ticker-headline a {
+    color: #fff;
     text-decoration: none;
-    color: #fff; /* Gleiche Textfarbe wie Hintergrund */
+    font-weight: bold;
   }
   
   .news-ticker-headline a:hover {
     text-decoration: underline;
-  }
-  
-  /* ----------------------------------------- */
-  /* Keyframes-Animation: Schiebt den Wrapper  */
-  /* von rechts nach links durch den Viewport. */
-  /* ----------------------------------------- */
-  @keyframes headlines-scroll {
-    0% {
-      transform: translateX(0%);
-    }
-    100% {
-      transform: translateX(-100%);
-    }
-  }
-  
-  /* ------------------------------------------------------ */
-  /* Beispiel: Label oder Icon links, wenn du es einbauen   */
-  /* möchtest (optional). Etwa ein "NEWS"-Badge am linken Rand */
-  /* ------------------------------------------------------ */
-  .news-ticker-label {
-    background-color: #900; /* Dunklerer Rotton oder nach Belieben */
-    padding: 0 10px;
-    margin-right: 15px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 14px;
-    line-height: 40px; /* An Höhe des Containers anpassen */
-    display: inline-block;
-    color: #fff;
   }
   
