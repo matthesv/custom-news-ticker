@@ -176,7 +176,7 @@
     display: none;
 }
 
-/* --- Neue Regel: Permalink bei JS-Aktivierung ausblenden --- */
+/* Permalink bei JS-Aktivierung ausblenden */
 .js-enabled .news-ticker-permalink {
     display: none;
 }
@@ -220,7 +220,6 @@
     position: absolute;
     left: 0;
     top: 0;
-    color: #FF4500;
     font-size: 1.2em;
 }
   
@@ -268,58 +267,70 @@
     margin-top: 5px;
     margin-left: 8px;
 }
-/* -------------------------------------------- */
-/* Äußerer Container: rote Leiste, weiße Schrift*/
-/* -------------------------------------------- */
+
+/* ---------------------- */
+/* Headlines Shortcode CSS */
+/* (angepasst: ohne farbige Gestaltung) */
 .news-ticker-headlines-container {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     width: 100%;
-    min-height: 40px;         /* Höhe anpassen */
-    background-color: #c30000;/* Hintergrundfarbe (rot) */
-    color: #fff;              /* Textfarbe */
-    padding: 0 15px;          /* Innenabstand links/rechts */
+    min-height: 40px;
+    padding: 0 15px;
     position: relative;
     overflow: hidden;
     font-family: sans-serif;
     font-size: 14px;
     box-sizing: border-box;
-  }
-  
-  /* Der Wrapper, in dem alle Headlines liegen */
-  .news-ticker-headlines-wrapper {
-    position: relative; 
+}
+
+.news-ticker-headlines-wrapper {
+    position: relative;
     flex-grow: 1;
-  }
-  
-  /* Einzelne Meldung: standardmäßig unsichtbar */
-  .news-ticker-headline {
+}
+
+.news-ticker-headline {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-  
-    /* Fade-Effekt: Opacity + Transition */
     opacity: 0;
     display: none;
     transition: opacity 0.5s ease-in-out;
-  }
-  
-  /* Die "aktive" Meldung wird eingeblendet */
-  .news-ticker-headline.active {
-    display: block;   /* sichtbar */
-    opacity: 1;       /* volle Deckkraft */
-  }
-  
-  /* Links in den Headlines */
-  .news-ticker-headline a {
-    color: #fff;
+}
+
+.news-ticker-headline.active {
+    display: block;
+    opacity: 1;
+}
+
+.news-ticker-headline a {
     text-decoration: none;
     font-weight: bold;
-  }
-  
-  .news-ticker-headline a:hover {
+}
+
+.news-ticker-headline a:hover {
     text-decoration: underline;
-  }
-  
+}
+
+/* Lightbox overlay styles */
+#nt-lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+#nt-lightbox-overlay img {
+    max-width: 90%;
+    max-height: 90%;
+    border: 5px solid #fff;
+    border-radius: 4px;
+}

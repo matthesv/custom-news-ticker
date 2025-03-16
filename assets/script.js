@@ -204,4 +204,24 @@ jQuery(document).ready(function ($) {
     $(window).on('beforeunload', function() {
         clearInterval(refreshInterval);
     });
+    
+    // Lightbox functionality for images:
+    // Beim Klick auf ein Bild im News-Inhalt wird ein Overlay mit dem vergrößerten Bild angezeigt.
+    $(document).on('click', '.news-ticker-content img', function(e) {
+        e.preventDefault();
+        var imgSrc = $(this).attr('src');
+        // Overlay erstellen, falls noch nicht vorhanden
+        if ($('#nt-lightbox-overlay').length === 0) {
+            $('body').append('<div id="nt-lightbox-overlay"><img id="nt-lightbox-img" src="" alt=""></div>');
+        }
+        $('#nt-lightbox-img').attr('src', imgSrc);
+        $('#nt-lightbox-overlay').fadeIn(300);
+    });
+    
+    // Schließe die Lightbox, wenn außerhalb des Bildes geklickt wird.
+    $(document).on('click', '#nt-lightbox-overlay', function(e) {
+        if (e.target.id === 'nt-lightbox-overlay') {
+            $(this).fadeOut(300);
+        }
+    });
 });
