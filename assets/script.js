@@ -40,7 +40,7 @@ jQuery(document).ready(function ($) {
             dotStyle = "background-color:" + dotColor + "; --dot-color:" + dotColor + "; --dot-color-pulse:" + rgbaPulse + "; --dot-color-pulse-transparent:" + rgbaTransparent + ";";
         }
         
-        var imageHTML = news.image ? '<img src="'+news.image+'" alt="'+news.title+'" itemprop="image">' : '';
+        var imageHTML = news.image ? '<img src="'+news.image+'" alt="'+news.title+'" data-full-image="'+(news.full_image || news.image)+'" data-caption="'+news.title+'">' : '';
         // Breaking-News Badge und "Mark as Read"-Button hinzufügen
         var breakingBadge = news.is_breaking ? '<span class="nt-breaking-news">' + news.breaking_text + '</span>' : '';
         var html = '<article class="news-ticker-entry" data-news-id="'+news.ID+'" tabindex="0" role="listitem" itemscope itemtype="https://schema.org/NewsArticle">';
@@ -136,7 +136,7 @@ jQuery(document).ready(function ($) {
         loadNews('refresh', 0);
     }, newsTickerAjax.refresh_interval * 1000);
     
-    // Auto Refresh Toggle Button (Text: "Auto Refresh aus" wenn aktiv, "Auto Refresh an" wenn pausiert)
+    // Auto Refresh Toggle Button
     $('#news-ticker-toggle-refresh').on('click', function(e) {
         e.preventDefault();
         if(autoRefreshEnabled){
@@ -152,7 +152,7 @@ jQuery(document).ready(function ($) {
         }
     });
     
-    // Auto-Pause bei inaktivem Tab mittels Page Visibility API
+    // Auto-Pause bei inaktivem Tab
     document.addEventListener("visibilitychange", function() {
         if (document.visibilityState === "hidden") {
             clearInterval(refreshInterval);
@@ -193,7 +193,7 @@ jQuery(document).ready(function ($) {
         }
     });
     
-    // "Mark as read" Button: Entfernt den entsprechenden News-Eintrag (optisch)
+    // "Mark as read" Button
     $(document).on('click', '.nt-mark-read', function(e) {
         e.preventDefault();
         $(this).closest('.news-ticker-entry').fadeOut(300, function() {
@@ -205,20 +205,29 @@ jQuery(document).ready(function ($) {
         clearInterval(refreshInterval);
     });
     
-    // Lightbox functionality for images:
-    // Beim Klick auf ein Bild im News-Inhalt wird ein Overlay mit dem vergrößerten Bild angezeigt.
+    // Lightbox functionality: Beim Klick auf ein Bild im News-Inhalt
     $(document).on('click', '.news-ticker-content img', function(e) {
         e.preventDefault();
-        var imgSrc = $(this).attr('src');
+        // Verwende data-full-image, falls vorhanden, sonst src
+        var imgSrc = $(this).data('full-image') || $(this).attr('src');
+        var caption = $(this).data('caption') || $(this).attr('alt') || '';
         // Overlay erstellen, falls noch nicht vorhanden
         if ($('#nt-lightbox-overlay').length === 0) {
-            $('body').append('<div id="nt-lightbox-overlay"><img id="nt-lightbox-img" src="" alt=""></div>');
+            $('body').append(
+                '<div id="nt-lightbox-overlay">' +
+                    '<div id="nt-lightbox-content">' +
+                        '<img id="nt-lightbox-img" src="" alt="">' +
+                        '<div id="nt-lightbox-caption"></div>' +
+                    '</div>' +
+                '</div>'
+            );
         }
         $('#nt-lightbox-img').attr('src', imgSrc);
+        $('#nt-lightbox-caption').text(caption);
         $('#nt-lightbox-overlay').fadeIn(300);
     });
     
-    // Schließe die Lightbox, wenn außerhalb des Bildes geklickt wird.
+    // Schließe die Lightbox, wenn außerhalb des Inhalts geklickt wird
     $(document).on('click', '#nt-lightbox-overlay', function(e) {
         if (e.target.id === 'nt-lightbox-overlay') {
             $(this).fadeOut(300);

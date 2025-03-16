@@ -153,7 +153,6 @@
     text-align: center;
 }
 
-/* Styling des Dashicons innerhalb des Buttons */
 .news-ticker-load-more .dashicons {
     vertical-align: middle;
     margin-right: 5px;
@@ -163,7 +162,7 @@
     opacity: 0.8;
 }
 
-/* Tooltip für die Zeitangabe */
+/* Tooltip for time indicator */
 .news-ticker-tooltip {
     position: absolute;
     background: #333;
@@ -176,12 +175,12 @@
     display: none;
 }
 
-/* Permalink bei JS-Aktivierung ausblenden */
+/* Permalink ausblenden wenn JS aktiv */
 .js-enabled .news-ticker-permalink {
     display: none;
 }
 
-/* Basis-Styles für die Quellenbox */
+/* Quellenbox Styles */
 .news-ticker-sources {
     background-color: #f8f9fc;
     border: 1px solid #e1e4e8;
@@ -239,7 +238,7 @@
     border: 1px solid #ccc;
 }
 
-/* Controls container: Mehr Laden und Auto Refresh Buttons nebeneinander */
+/* Controls container */
 .news-ticker-controls {
     display: flex;
     justify-content: center;
@@ -247,7 +246,7 @@
     margin-top: 10px;
 }
 
-/* Neue Styles: Breaking News Badge */
+/* Breaking News Badge */
 .nt-breaking-news {
     background-color: #ff0000;
     color: #fff;
@@ -257,7 +256,7 @@
     margin-right: 5px;
 }
 
-/* Neue Styles: "Mark as read" Button */
+/* "Mark as read" Button */
 .nt-mark-read {
     background-color: transparent;
     border: none;
@@ -269,8 +268,7 @@
 }
 
 /* ---------------------- */
-/* Headlines Shortcode CSS */
-/* (angepasst: ohne farbige Gestaltung) */
+/* Headlines Shortcode CSS (ohne farbige Gestaltung) */
 .news-ticker-headlines-container {
     display: flex;
     align-items: center;
@@ -314,7 +312,8 @@
     text-decoration: underline;
 }
 
-/* Lightbox overlay styles */
+/* ---------------------- */
+/* Lightbox Styles */
 #nt-lightbox-overlay {
     position: fixed;
     top: 0;
@@ -328,9 +327,26 @@
     z-index: 10000;
 }
 
-#nt-lightbox-overlay img {
+#nt-lightbox-content {
+    text-align: center;
     max-width: 90%;
-    max-height: 90%;
+}
+
+#nt-lightbox-img {
+    max-width: 100%;
+    max-height: 80vh;
     border: 5px solid #fff;
     border-radius: 4px;
+}
+
+@media (min-width: 720px) {
+    #nt-lightbox-img {
+        min-width: 720px;
+    }
+}
+
+#nt-lightbox-caption {
+    color: #fff;
+    margin-top: 10px;
+    font-size: 16px;
 }
