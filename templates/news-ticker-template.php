@@ -85,16 +85,17 @@ if (!empty($query->posts)) {
             <div class="news-ticker-dot" style="<?php echo esc_attr($dot_style); ?>"></div>
 
             <div class="news-ticker-content">
-                <?php 
-                // Ausgabe des Beitragsbildes mit Daten für die Lightbox:
-                $thumb_url = get_the_post_thumbnail_url(get_the_ID(), 'thumbnail');
-                // Verwende "full", um die Originaldatei abzurufen:
-                $full_url = get_the_post_thumbnail_url(get_the_ID(), 'full');
-                $title = get_the_title();
-                if($thumb_url) {
-                    echo '<img src="' . esc_url($thumb_url) . '" alt="' . esc_attr($title) . '" data-full-image="' . esc_url($full_url) . '" data-caption="' . esc_attr($title) . '">';
-                }
-                ?>
+            <?php 
+// Ausgabe des Beitragsbildes mit Daten für die Lightbox:
+$thumb_url = get_the_post_thumbnail_url(get_the_ID(), 'thumbnail');
+// Hole die Originalgröße (full) für die Lightbox
+$full_url = get_the_post_thumbnail_url(get_the_ID(), 'full');
+$title = get_the_title();
+if ($thumb_url) {
+    // src: Thumbnail, data-full-image: Originaldatei
+    echo '<img src="' . esc_url($thumb_url) . '" alt="' . esc_attr($title) . '" data-full-image="' . esc_url($full_url) . '" data-caption="' . esc_attr($title) . '">';
+}
+?>
 
                 <header>
                     <?php echo $breaking_badge; ?>
