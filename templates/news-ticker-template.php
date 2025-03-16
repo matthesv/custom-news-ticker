@@ -2,7 +2,7 @@
 /**
  * Template für den News Ticker.
  *
- * Dieses Template kann durch Kopieren in dein Theme und Anpassung überschrieben werden.
+ * Dieses Template kann durch Kopieren in Dein Theme und Anpassung überschrieben werden.
  */
 
 if (!defined('ABSPATH')) exit;
@@ -82,14 +82,22 @@ if (!empty($query->posts)) {
                  style="<?php echo esc_attr($bg_style); ?>"
                  itemscope itemtype="https://schema.org/NewsArticle">
 
-            <div class="news-ticker-dot" style="<?php echo esc_attr($dot_style); ?>">
-            </div>
+            <div class="news-ticker-dot" style="<?php echo esc_attr($dot_style); ?>"></div>
 
             <div class="news-ticker-content">
-                <?php echo get_the_post_thumbnail(get_the_ID(), 'thumbnail', ['alt' => get_the_title()]); ?>
+                <?php 
+                // Ausgabe des Beitragsbildes mit Daten für die Lightbox:
+                $thumb_url = get_the_post_thumbnail_url(get_the_ID(), 'thumbnail');
+                // Verwende "full", um die Originaldatei abzurufen:
+                $full_url = get_the_post_thumbnail_url(get_the_ID(), 'full');
+                $title = get_the_title();
+                if($thumb_url) {
+                    echo '<img src="' . esc_url($thumb_url) . '" alt="' . esc_attr($title) . '" data-full-image="' . esc_url($full_url) . '" data-caption="' . esc_attr($title) . '">';
+                }
+                ?>
 
                 <header>
-                    <?php echo $breaking_badge; // Ausgabe des Breaking-News Badges ?>
+                    <?php echo $breaking_badge; ?>
                     <h2 itemprop="headline"><?php the_title(); ?></h2>
                 </header>
 
@@ -121,9 +129,7 @@ if (!empty($query->posts)) {
                                     $maybe_url = trim($link);
                                     if (filter_var($maybe_url, FILTER_VALIDATE_URL)) {
                                         $escaped_url = esc_url($maybe_url);
-                                        echo '<a href="' . $escaped_url . '" target="_blank" rel="noopener noreferrer">'
-                                             . esc_html($maybe_url) .
-                                             '</a>';
+                                        echo '<a href="' . $escaped_url . '" target="_blank" rel="noopener noreferrer">' . esc_html($maybe_url) . '</a>';
                                     } else {
                                         echo esc_html($link);
                                     }
