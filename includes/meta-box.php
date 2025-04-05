@@ -106,3 +106,5 @@ function nt_save_border_color_meta_box($post_id) {
     }
 }
 add_action('save_post', 'nt_save_border_color_meta_box');
+
+?>
