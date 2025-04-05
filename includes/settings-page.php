@@ -164,4 +164,3 @@ function nt_settings_page() {
     </div>
     <?php
 }
-?> 

@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom News Ticker
 Description: Ein anpassbarer News-Ticker mit Kategorien, Bildern und Live-Updates.
-Version: 1.6.6
+Version: 1.6.7
 Author: Matthes
 */
 
@@ -68,4 +68,3 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
     'custom-news-ticker'
 );
 $myUpdateChecker->setBranch('main');
-?>
